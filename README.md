@@ -57,6 +57,16 @@ If no password is available, `escli` assumes no HTTP auth is intended, and conne
 The version of `escli` can be shown using the `escli version` command.
 
 
+### Verbosity
+
+Verbosity can be increased using the `-v` command line option.
+This can be passed multiple times (e.g. `-vv`) for a higher level of detail.
+
+The following levels are defined:
+- `-v` - "INFO" level logs will be displayed
+- `-vv` - "DEBUG" level logs will be displayed
+
+
 ## Search
 
 A search can be performed using the `escli search` command.

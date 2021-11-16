@@ -17,6 +17,7 @@
 
 
 from argparse import ArgumentParser
+from logging import basicConfig, DEBUG, INFO, WARNING
 from os import getenv
 from pprint import pprint
 
@@ -36,6 +37,7 @@ class ElasticsearchTool:
     def apply(self, args=None, namespace=None):
         args = self.parser.parse_args(args=args, namespace=namespace)
         self.verbosity += args.verbose
+        self.configure_logging()
         try:
             return args.f(args) or 0
         except ConnectionError as ex:
@@ -45,6 +47,16 @@ class ElasticsearchTool:
             self.print_error(ex, with_info=(self.verbosity > 0))
             status = 1
         return status
+
+    def configure_logging(self):
+        """ Configure logging according to the defined level of verbosity.
+        """
+        if self.verbosity >= 2:
+            basicConfig(level=DEBUG)
+        elif self.verbosity >= 1:
+            basicConfig(level=INFO)
+        else:
+            basicConfig(level=WARNING)
 
     def print_error(self, ex, with_info=False):
         print("{}: {}".format(ex.__class__.__name__, ex.error))

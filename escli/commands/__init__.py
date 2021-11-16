@@ -16,13 +16,21 @@
 # limitations under the License.
 
 
-from abc import ABC
+from abc import ABC, abstractmethod
 
 
 class Command(ABC):
+    """ Abstract base class for commands available through the command
+    line interface.
+    """
 
+    @abstractmethod
     def add_parser(self, subparsers):
-        raise NotImplementedError
+        """ Add a parser for this command to the given subparsers
+        collection.
+        """
 
+    @abstractmethod
     def execute(self, args):
-        raise NotImplementedError
+        """ Execute this command using the given arguments.
+        """

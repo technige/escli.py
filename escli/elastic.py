@@ -21,7 +21,7 @@ from os import getenv
 
 from elasticsearch import Elasticsearch
 
-from escli.commands.search import SearchCommand
+from escli.commands.search import SearchQuery
 from escli.commands.version import VersionCommand
 
 
@@ -57,6 +57,6 @@ def default_parser(client):
     parser = ArgumentParser(description=__doc__)
     parser.set_defaults(f=lambda _: parser.print_usage())
     subparsers = parser.add_subparsers()
-    VersionCommand().add_parser(subparsers)
-    SearchCommand(client).add_parser(subparsers)
+    VersionCommand().attach(subparsers)
+    SearchQuery(client).attach(subparsers)
     return parser

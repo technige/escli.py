@@ -24,10 +24,7 @@ class VersionCommand(Command):
     """ Show the version.
     """
 
-    def add_parser(self, subparsers):
+    def attach(self, subparsers):
         parser = subparsers.add_parser("version", description=VersionCommand.__doc__)
-        parser.set_defaults(f=self.execute)
+        parser.set_defaults(f=lambda _: print("escli version %s" % __version__))
         return parser
-
-    def execute(self, args):
-        print("escli version %s" % __version__)

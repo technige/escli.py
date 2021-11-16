@@ -22,7 +22,6 @@ $ pip install escli
 ```bash
 $ export ES_PASSWORD=XXXXXXXXXXXXXXXXXXXX
 $ escli search kibana_sample_data_flights -f github -i "FlightNum,OriginAirportID,DestAirportID" -n 15
-Got 10000 Hits:
 | FlightNum   | DestAirportID   | OriginAirportID   |
 |-------------|-----------------|-------------------|
 | 9HY9SWR     | SYD             | FRA               |
@@ -56,6 +55,49 @@ If no password is available, `escli` assumes no HTTP auth is intended, and conne
 ### Search
 
 A search can be performed using the `escli search` command.
+Each search operation requires a target index and the column selection and output format can be tuned by command line options.
+
+The simplest (and default) form of search is a basic 'match_all'.
+The example below searches the _kibana_sample_data_flights_ index, returning the _FlightNum_, _Origin_ and _Dest_ fields for the first 5 hits.
+
+```bash
+$ escli search kibana_sample_data_flights -n 5 -i FlightNum,Origin,Dest
+FlightNum    Origin                                          Dest
+-----------  ----------------------------------------------  --------------------------------------------
+9HY9SWR      Frankfurt am Main Airport                       Sydney Kingsford Smith International Airport
+X98CCZO      Cape Town International Airport                 Venice Marco Polo Airport
+UFK2WIZ      Venice Marco Polo Airport                       Venice Marco Polo Airport
+EAYQW69      Naples International Airport                    Treviso-Sant'Angelo Airport
+58U013N      Licenciado Benito Juarez International Airport  Xi'an Xianyang International Airport
+```
+
+A more selective query can be achieved using the `match` subcommand.
+The example below selects only those results with "London" within the _OriginCityName_.
+
+```bash
+$ escli search kibana_sample_data_flights -n 5 -i FlightNum,Origin,Dest match OriginCityName=London
+FlightNum    Origin                  Dest
+-----------  ----------------------  -------------------------------------------------------
+46J5N4Y      London Gatwick Airport  Ottawa Macdonald-Cartier International Airport
+R0JFGVC      London Luton Airport    Stockholm-Arlanda Airport
+X8NT4WO      London Gatwick Airport  New Chitose Airport
+T0939V5      London Gatwick Airport  London Gatwick Airport
+AGZPJJ3      London Luton Airport    Montreal / Pierre Elliott Trudeau International Airport
+```
+
+An exact match can be obtained using the `term` subcommand.
+The example below looks for the exact value "Rain" in the _DestWeather_ field.
+
+```bash
+$ escli search kibana_sample_data_flights -n 5 -i FlightNum,Dest,DestWeather term DestWeather=Rain
+FlightNum    Dest                                            DestWeather
+-----------  ----------------------------------------------  -------------
+9HY9SWR      Sydney Kingsford Smith International Airport    Rain
+SNI3M1Z      Treviso-Sant'Angelo Airport                     Rain
+JQ2XXQ5      Helsinki Vantaa Airport                         Rain
+VT9O2KD      Ottawa Macdonald-Cartier International Airport  Rain
+7SFSTEH      Narita International Airport                    Rain
+```
 
 
 ### Version

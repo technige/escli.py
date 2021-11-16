@@ -21,27 +21,75 @@ from tabulate import tabulate
 from escli.commands import Command
 
 
-class SearchCommand(Command):
-    """ Search an index.
+class SearchQuery(Command):
+    """ Perform a search query against an index.
+
+    By default, this is a 'match_all' query, although other more
+    specialised query types are also available, such as 'match'
+    and 'term'.
     """
 
     def __init__(self, client):
         super().__init__()
         self.client = client
 
-    def add_parser(self, subparsers):
-        parser = subparsers.add_parser("search", description=SearchCommand.__doc__)
-        parser.add_argument("index", help="Target index to search. Multiple index names can be provided "
-                                          "as a comma-separated list, or use '*' to search all indices.")
-        parser.add_argument("-f", "--format", help="Output table format", default="simple")
-        parser.add_argument("-i", "--include", help="Source fields to include in matching documents", default="*")
+    def attach(self, subparsers):
+        parser = subparsers.add_parser("search", description=SearchQuery.__doc__)
+        parser.add_argument("index",
+                            help="Target index to search. Multiple index names can be provided "
+                                 "as a comma-separated list, or use '*' to search all indices.")
+        parser.add_argument("-f", "--format", default="simple",
+                            help="Output table format")
+        parser.add_argument("-i", "--include", default="*",
+                            help="Source fields to include in matching documents")
         parser.add_argument("-n", "--size", type=int, default=10)
         parser.add_argument("-s", "--sort")
         parser.set_defaults(f=self.execute)
+        search_subparsers = parser.add_subparsers()
+        MatchSearchQuery(self.client).attach(search_subparsers)
+        TermSearchQuery(self.client).attach(search_subparsers)
         return parser
 
     def execute(self, args):
+        """ Execute the search query and retrieve and display the results.
+        """
         res = self.client.search(index=args.index, _source_includes=args.include, size=args.size, sort=args.sort,
-                                 query={"match_all": {}})
-        print("Got %d Hits:" % res['hits']['total']['value'])
-        print(tabulate([hit["_source"] for hit in res['hits']['hits']], headers="keys", tablefmt=args.format))
+                                 query=self.make_query(args))
+        print(tabulate([hit["_source"] for hit in res["hits"]["hits"]], headers="keys", tablefmt=args.format))
+
+    def make_query(self, args):
+        """ Build and return the query body for a given set of arguments.
+        """
+        return {"match_all": {}}
+
+
+class MatchSearchQuery(SearchQuery):
+    """ Perform a 'match' search query against an index.
+    """
+
+    def attach(self, subparsers):
+        parser = subparsers.add_parser("match", description=MatchSearchQuery.__doc__)
+        parser.add_argument("pattern", metavar="field=query",
+                            help="Pattern to match in the form 'field=query'.")
+        parser.set_defaults(f=self.execute)
+        return parser
+
+    def make_query(self, args):
+        field, _, query = args.pattern.partition("=")
+        return {"match": {field: query}}
+
+
+class TermSearchQuery(SearchQuery):
+    """ Perform a 'term' search query against an index.
+    """
+
+    def attach(self, subparsers):
+        parser = subparsers.add_parser("term", description=TermSearchQuery.__doc__)
+        parser.add_argument("pattern", metavar="field=value",
+                            help="Term to match in the form 'field=value'.")
+        parser.set_defaults(f=self.execute)
+        return parser
+
+    def make_query(self, args):
+        field, _, value = args.pattern.partition("=")
+        return {"term": {field: value}}

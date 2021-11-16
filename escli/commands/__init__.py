@@ -25,12 +25,7 @@ class Command(ABC):
     """
 
     @abstractmethod
-    def add_parser(self, subparsers):
-        """ Add a parser for this command to the given subparsers
+    def attach(self, subparsers):
+        """ Attach a parser for this command to the given subparsers
         collection.
-        """
-
-    @abstractmethod
-    def execute(self, args):
-        """ Execute this command using the given arguments.
         """

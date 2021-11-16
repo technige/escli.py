@@ -39,11 +39,12 @@ class ElasticsearchWrapper:
 def default_client():
     """ Construct a default Elasticsearch client instance.
     """
+    es_host = getenv("ES_HOST", "localhost")
     es_user = getenv("ES_USER", "elastic")
     es_password = getenv("ES_PASSWORD")
     if es_password:
         # with auth
-        es = Elasticsearch(http_auth=(es_user, es_password))
+        es = Elasticsearch(hosts=es_host.split(","), http_auth=(es_user, es_password))
     else:
         # without auth
         es = Elasticsearch()

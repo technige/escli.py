@@ -42,7 +42,7 @@ Got 10000 Hits:
 | NRHSVG8     | SJU             | RM12              |
 ```
 
-### Authentication
+### Connectivity & Authentication
 
 The `escli` tool relies on connection details and credentials supplied through environment variables.
 The following list of variable are accepted:

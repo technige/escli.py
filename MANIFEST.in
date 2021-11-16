@@ -1,0 +1,6 @@
+include DEPENDENCIES.md
+include LICENSE.md
+include NOTICE.md
+include README.md
+include */VERSION
+prune test

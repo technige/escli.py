@@ -47,7 +47,7 @@ The `escli` tool relies on connection details and credentials supplied through e
 The following list of variable are accepted:
 - `ES_HOST` - one or more host names to which to connect; multiple hosts can be separated by commas and a port number can be appended after a colon (e.g. `a.example.com:8888,b.example.com:9999`)
 - `ES_USER` - user name for HTTP auth (default = `elastic`)
-- `ES_PASSWORD` - password for HTTP auth(no default)
+- `ES_PASSWORD` - password for HTTP auth (no default)
 
 If no password is available, `escli` assumes no HTTP auth is intended, and connects without.
 

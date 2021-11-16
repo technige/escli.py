@@ -16,19 +16,12 @@
 # limitations under the License.
 
 
-from elasticsearch.exceptions import TransportError
-
-from escli.elastic import ElasticsearchWrapper
+from escli.elastic import ElasticsearchTool
 
 
 def main():
-    es = ElasticsearchWrapper()
-    try:
-        status = es.execute() or 0
-    except TransportError as ex:
-        # TODO: a cleaner way to show errors that doesn't spill the code internals
-        print(ex)
-        status = 1
+    tool = ElasticsearchTool()
+    status = tool.apply()
     exit(status)
 
 

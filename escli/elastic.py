@@ -18,45 +18,63 @@
 
 from argparse import ArgumentParser
 from os import getenv
+from pprint import pprint
 
-from elasticsearch import Elasticsearch
+from elasticsearch import Elasticsearch, ConnectionError, TransportError
 
 from escli.commands.search import SearchQuery
 from escli.commands.version import VersionCommand
 
 
-class ElasticsearchWrapper:
+class ElasticsearchTool:
 
-    def __init__(self, client=None, parser=None):
-        self.client = client or default_client()
-        self.parser = parser or default_parser(self.client)
+    def __init__(self, client=None, parser=None, verbosity=0):
+        self.client = client or self.default_client()
+        self.parser = parser or self.default_parser(self.client)
+        self.verbosity = verbosity
 
-    def execute(self, args=None, namespace=None):
+    def apply(self, args=None, namespace=None):
         args = self.parser.parse_args(args=args, namespace=namespace)
-        return args.f(args)
+        self.verbosity += args.verbose
+        try:
+            return args.f(args) or 0
+        except ConnectionError as ex:
+            self.print_error(ex)
+            status = 1
+        except TransportError as ex:
+            self.print_error(ex, with_info=(self.verbosity > 0))
+            status = 1
+        return status
 
+    def print_error(self, ex, with_info=False):
+        print("{}: {}".format(ex.__class__.__name__, ex.error))
+        if with_info:
+            pprint(ex.info)
 
-def default_client():
-    """ Construct a default Elasticsearch client instance.
-    """
-    es_host = getenv("ES_HOST", "localhost")
-    es_user = getenv("ES_USER", "elastic")
-    es_password = getenv("ES_PASSWORD")
-    if es_password:
-        # with auth
-        es = Elasticsearch(hosts=es_host.split(","), http_auth=(es_user, es_password))
-    else:
-        # without auth
-        es = Elasticsearch()
-    return es
+    @classmethod
+    def default_client(cls):
+        """ Construct a default Elasticsearch client instance.
+        """
+        es_host = getenv("ES_HOST", "localhost")
+        es_user = getenv("ES_USER", "elastic")
+        es_password = getenv("ES_PASSWORD")
+        if es_password:
+            # with auth
+            es = Elasticsearch(hosts=es_host.split(","), http_auth=(es_user, es_password))
+        else:
+            # without auth
+            es = Elasticsearch()
+        return es
 
-
-def default_parser(client):
-    """ Construct a default ArgumentParser instance for a given client.
-    """
-    parser = ArgumentParser(description=__doc__)
-    parser.set_defaults(f=lambda _: parser.print_usage())
-    subparsers = parser.add_subparsers()
-    VersionCommand().attach(subparsers)
-    SearchQuery(client).attach(subparsers)
-    return parser
+    @classmethod
+    def default_parser(cls, client):
+        """ Construct a default ArgumentParser instance for a given client.
+        """
+        parser = ArgumentParser(description=__doc__)
+        parser.add_argument("-v", "--verbose", action="count", default=0,
+                            help="Increase verbosity")
+        parser.set_defaults(f=lambda _: parser.print_usage())
+        subparsers = parser.add_subparsers()
+        VersionCommand().attach(subparsers)
+        SearchQuery(client).attach(subparsers)
+        return parser

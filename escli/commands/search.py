@@ -34,13 +34,14 @@ class SearchCommand(Command):
         parser.add_argument("index", help="Target index to search. Multiple index names can be provided "
                                           "as a comma-separated list, or use '*' to search all indices.")
         parser.add_argument("-f", "--format", help="Output table format", default="simple")
-        parser.add_argument("-i", "--include", help="Indicates which source fields are returned for matching documents", default="*")
+        parser.add_argument("-i", "--include", help="Source fields to include in matching documents", default="*")
         parser.add_argument("-n", "--size", type=int, default=10)
         parser.add_argument("-s", "--sort")
         parser.set_defaults(f=self.execute)
         return parser
 
     def execute(self, args):
-        res = self.client.search(index=args.index, query={"match_all": {}}, _source_includes=args.include, size=args.size, sort=args.sort)
+        res = self.client.search(index=args.index, _source_includes=args.include, size=args.size, sort=args.sort,
+                                 query={"match_all": {}})
         print("Got %d Hits:" % res['hits']['total']['value'])
         print(tabulate([hit["_source"] for hit in res['hits']['hits']], headers="keys", tablefmt=args.format))

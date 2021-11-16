@@ -6,6 +6,15 @@ It began as an experimental side project during November 2021, implementing a li
 It is currently considered prototypical, and not suitable for production use.
 
 
+## Installation
+
+To install `escli`, simply use `pip`:
+
+```bash
+$ pip install escli
+```
+
+
 ## Usage
 
 ### Quick Example

@@ -15,7 +15,7 @@ $ pip install escli
 ```
 
 
-## Usage
+## Basic Usage
 
 ### Quick Example
 
@@ -52,10 +52,17 @@ The following list of variable are accepted:
 If no password is available, `escli` assumes no HTTP auth is intended, and connects without.
 
 
-### Search
+### Version
+
+The version of `escli` can be shown using the `escli version` command.
+
+
+## Search
 
 A search can be performed using the `escli search` command.
 Each search operation requires a target index and the column selection and output format can be tuned by command line options.
+
+### 'Match All' Search Queries
 
 The simplest (and default) form of search is a basic 'match_all'.
 The example below searches the _kibana_sample_data_flights_ index, returning the _FlightNum_, _Origin_ and _Dest_ fields for the first 5 hits.
@@ -71,6 +78,8 @@ EAYQW69      Naples International Airport                    Treviso-Sant'Angelo
 58U013N      Licenciado Benito Juarez International Airport  Xi'an Xianyang International Airport
 ```
 
+### 'Match' Search Queries
+
 A more selective query can be achieved using the `match` subcommand.
 The example below selects only those results with "London" within the _OriginCityName_.
 
@@ -85,6 +94,8 @@ T0939V5      London Gatwick Airport  London Gatwick Airport
 AGZPJJ3      London Luton Airport    Montreal / Pierre Elliott Trudeau International Airport
 ```
 
+### 'Term' Search Queries
+
 An exact match can be obtained using the `term` subcommand.
 The example below looks for the exact value "Rain" in the _DestWeather_ field.
 
@@ -98,8 +109,3 @@ JQ2XXQ5      Helsinki Vantaa Airport                         Rain
 VT9O2KD      Ottawa Macdonald-Cartier International Airport  Rain
 7SFSTEH      Narita International Airport                    Rain
 ```
-
-
-### Version
-
-The version of `escli` can be shown using the `escli version` command.

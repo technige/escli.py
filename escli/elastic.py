@@ -17,12 +17,13 @@
 
 
 from argparse import ArgumentParser
-from logging import basicConfig, DEBUG, INFO, WARNING
+from logging import basicConfig, DEBUG, INFO, WARNING, ERROR, CRITICAL
 from os import getenv
 from pprint import pprint
 
 from elasticsearch import Elasticsearch, ConnectionError, AuthenticationException, TransportError
 
+from escli.commands.ingest import IngestCommand
 from escli.commands.search import SearchQuery
 from escli.commands.version import VersionCommand
 
@@ -39,7 +40,7 @@ class ElasticsearchTool:
 
     def apply(self, args=None, namespace=None):
         args = self.parser.parse_args(args=args, namespace=namespace)
-        self.verbosity += args.verbose
+        self.verbosity += args.verbose - args.quiet
         self.configure_logging()
         try:
             return args.f(args) or 0
@@ -59,13 +60,31 @@ class ElasticsearchTool:
 
     def configure_logging(self):
         """ Configure logging according to the defined level of verbosity.
+
+        The verbosity levels available are as follows:
+
+            Level +2
+              DEBUG, INFO, WARNING, ERROR, CRITICAL
+            Level +1
+              INFO, WARNING, ERROR, CRITICAL
+            Level 0
+              WARNING, ERROR, CRITICAL
+            Level -1
+              ERROR, CRITICAL
+            Level -2
+              CRITICAL
+
         """
         if self.verbosity >= 2:
             basicConfig(format=LOG_FORMAT, level=DEBUG)
         elif self.verbosity >= 1:
             basicConfig(format=LOG_FORMAT, level=INFO)
-        else:
+        elif self.verbosity >= 0:
             basicConfig(format=LOG_FORMAT, level=WARNING)
+        elif self.verbosity >= -1:
+            basicConfig(format=LOG_FORMAT, level=ERROR)
+        else:
+            basicConfig(format=LOG_FORMAT, level=CRITICAL)
 
     def print_error(self, ex, with_info=False):
         print("{}: {}".format(ex.__class__.__name__, ex.error))
@@ -92,10 +111,11 @@ class ElasticsearchTool:
         """ Construct a default ArgumentParser instance for a given client.
         """
         parser = ArgumentParser(description=__doc__)
-        parser.add_argument("-v", "--verbose", action="count", default=0,
-                            help="Increase verbosity")
+        parser.add_argument("-v", "--verbose", action="count", default=0, help="Increase verbosity")
+        parser.add_argument("-q", "--quiet", action="count", default=0, help="Decrease verbosity")
         parser.set_defaults(f=lambda _: parser.print_usage())
         subparsers = parser.add_subparsers()
         VersionCommand().attach(subparsers)
         SearchQuery(client).attach(subparsers)
+        IngestCommand(client).attach(subparsers)
         return parser

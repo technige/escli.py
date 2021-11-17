@@ -59,12 +59,20 @@ The version of `escli` can be shown using the `escli version` command.
 
 ### Verbosity
 
-Verbosity can be increased using the `-v` command line option.
-This can be passed multiple times (e.g. `-vv`) for a higher level of detail.
+Verbosity can be increased using the `-v` command line option and decreased using the `-q` option.
+This can be passed multiple times (e.g. `-vv`) for a higher level of detail with each `v` or `q` increasing or decreasing the level respectively.
 
-The following levels are defined:
-- `-v` - "INFO" level logs will be displayed
-- `-vv` - "DEBUG" level logs will be displayed
+The table below shows the available verbosity levels and the options required to select each.
+Verbosity level zero is the default and does not require any explicit options to be passed.
+Note that critical errors cannot be hidden.
+
+| Verbosity    | Options | DEBUG | INFO  | WARNING | ERROR | CRITICAL |
+| :----------: | :-----: | :---: | :---: | :-----: | :---: | :------: |
+| +2           | `-vv`   | show  | show  | show    | show  | show     |
+| +1           | `-v`    | hide  | show  | show    | show  | show     |
+|  0           |         | hide  | hide  | show    | show  | show     |
+| -1           | `-q`    | hide  | hide  | hide    | show  | show     |
+| -2           | `-qq`   | hide  | hide  | hide    | hide  | show     |
 
 
 ## Search

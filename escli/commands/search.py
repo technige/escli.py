@@ -69,8 +69,8 @@ class MatchSearchQuery(SearchQuery):
 
     def attach(self, subparsers):
         parser = subparsers.add_parser("match", description=MatchSearchQuery.__doc__)
-        parser.add_argument("pattern", metavar="field=query",
-                            help="Pattern to match in the form 'field=query'.")
+        parser.add_argument("pattern", metavar="FIELD=QUERY",
+                            help="Pattern to match in the form 'FIELD=QUERY'.")
         parser.set_defaults(f=self.execute)
         return parser
 
@@ -85,8 +85,8 @@ class TermSearchQuery(SearchQuery):
 
     def attach(self, subparsers):
         parser = subparsers.add_parser("term", description=TermSearchQuery.__doc__)
-        parser.add_argument("pattern", metavar="field=value",
-                            help="Term to match in the form 'field=value'.")
+        parser.add_argument("pattern", metavar="FIELD=VALUE",
+                            help="Term to match in the form 'FIELD=VALUE'.")
         parser.set_defaults(f=self.execute)
         return parser
 

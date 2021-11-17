@@ -8,10 +8,16 @@ It is currently considered prototypical, and not suitable for production use.
 
 ## Installation
 
-To install `escli`, simply use `pip`:
+To install `escli` in the current virtualenv or for the entire system, simply use `pip`:
 
 ```bash
 $ pip install escli
+```
+
+To instead install just for the current user, include the `--user` option:
+
+```bash
+$ pip install --user escli
 ```
 
 
@@ -61,6 +67,7 @@ The version of `escli` can be shown using the `escli version` command.
 
 Verbosity can be increased using the `-v` command line option and decreased using the `-q` option.
 This can be passed multiple times (e.g. `-vv`) for a higher level of detail with each `v` or `q` increasing or decreasing the level respectively.
+Any `-v` and `-q` options passed must be included _before_ the command, i.e. `escli -v COMMAND ARGS...`
 
 The table below shows the available verbosity levels and the options required to select each.
 Verbosity level zero is the default and does not require any explicit options to be passed.
@@ -126,4 +133,38 @@ SNI3M1Z      Treviso-Sant'Angelo Airport                     Rain
 JQ2XXQ5      Helsinki Vantaa Airport                         Rain
 VT9O2KD      Ottawa Macdonald-Cartier International Airport  Rain
 7SFSTEH      Narita International Airport                    Rain
+```
+
+
+## Ingestion
+
+To ingest data, use the `escli ingest` command.
+One or more JSON-formatted files can be supplied with the document content, or data can be read from _stdin_.
+
+A simple import from _stdin_ might look like this:
+
+```bash
+$ echo '{"name": "Alice", "age": 33}' | escli -v ingest people
+INFO: [elasticsearch] GET http://localhost:9200/ [status:200 request:0.002s]
+INFO: [elasticsearch] POST http://localhost:9200/people/_doc [status:201 request:0.177s]
+INFO: [escli.commands.ingest] Ingested JSON data from file '<stdin>' with result {...}
+```
+
+Whereas an import from a file would look like this:
+
+```bash
+$ escli -v ingest people bob.json
+INFO: [elasticsearch] GET http://localhost:9200/ [status:200 request:0.002s]
+INFO: [elasticsearch] POST http://localhost:9200/people/_doc [status:201 request:0.008s]
+INFO: [escli.commands.ingest] Ingested JSON data from file 'bob.json' with result {...}
+```
+
+A quick search shows that the documents have been successfully ingested:
+
+```bash
+$ escli search people
+name      age
+------  -----
+Alice      33
+Bob        44
 ```

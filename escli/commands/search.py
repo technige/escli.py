@@ -35,7 +35,7 @@ class SearchQuery(Command):
 
     def attach(self, subparsers):
         parser = subparsers.add_parser("search", description=SearchQuery.__doc__)
-        parser.add_argument("index",
+        parser.add_argument("index", metavar="INDEX",
                             help="Target index to search. Multiple index names can be provided "
                                  "as a comma-separated list, or use '*' to search all indices.")
         parser.add_argument("-f", "--format", default="simple",

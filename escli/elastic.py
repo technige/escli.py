@@ -17,9 +17,8 @@
 
 
 from argparse import ArgumentParser
-from logging import basicConfig, DEBUG, INFO, WARNING, ERROR, CRITICAL
+from logging import basicConfig, getLogger, DEBUG, INFO, WARNING, ERROR, CRITICAL
 from os import getenv
-from pprint import pprint
 
 from elasticsearch import Elasticsearch, ConnectionError, AuthenticationException, TransportError
 
@@ -27,6 +26,8 @@ from escli.commands.ingest import IngestCommand
 from escli.commands.search import SearchQuery
 from escli.commands.version import VersionCommand
 
+
+log = getLogger(__name__)
 
 LOG_FORMAT = "\x1b[36m%(levelname)s: [%(name)s] %(message)s\x1b[39m"
 
@@ -45,16 +46,17 @@ class ElasticsearchTool:
         try:
             return args.f(args) or 0
         except ConnectionError as ex:
-            self.print_error(ex)
+            log.error(str(ex))
+            log.debug(ex.info)
             status = 1
         except AuthenticationException as ex:
-            if self.verbosity > 0:
-                self.print_error(ex, with_info=True)
-            print("Authentication failed: check that the ES_USER and "
-                  "ES_PASSWORD environment variables are correctly set.")
+            log.error(str(ex))
+            log.debug(ex.info)
+            log.warning("Check that the ES_USER and ES_PASSWORD environment variables are correctly set.")
             status = 1
         except TransportError as ex:
-            self.print_error(ex, with_info=(self.verbosity > 0))
+            log.error(str(ex))
+            log.debug(ex.info)
             status = 1
         return status
 
@@ -85,11 +87,6 @@ class ElasticsearchTool:
             basicConfig(format=LOG_FORMAT, level=ERROR)
         else:
             basicConfig(format=LOG_FORMAT, level=CRITICAL)
-
-    def print_error(self, ex, with_info=False):
-        print("{}: {}".format(ex.__class__.__name__, ex.error))
-        if with_info:
-            pprint(ex.info)
 
     @classmethod
     def default_client(cls):

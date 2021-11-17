@@ -21,10 +21,13 @@ from logging import basicConfig, DEBUG, INFO, WARNING
 from os import getenv
 from pprint import pprint
 
-from elasticsearch import Elasticsearch, ConnectionError, TransportError
+from elasticsearch import Elasticsearch, ConnectionError, AuthenticationException, TransportError
 
 from escli.commands.search import SearchQuery
 from escli.commands.version import VersionCommand
+
+
+LOG_FORMAT = "\x1b[36m%(levelname)s: [%(name)s] %(message)s\x1b[39m"
 
 
 class ElasticsearchTool:
@@ -43,6 +46,12 @@ class ElasticsearchTool:
         except ConnectionError as ex:
             self.print_error(ex)
             status = 1
+        except AuthenticationException as ex:
+            if self.verbosity > 0:
+                self.print_error(ex, with_info=True)
+            print("Authentication failed: check that the ES_USER and "
+                  "ES_PASSWORD environment variables are correctly set.")
+            status = 1
         except TransportError as ex:
             self.print_error(ex, with_info=(self.verbosity > 0))
             status = 1
@@ -52,11 +61,11 @@ class ElasticsearchTool:
         """ Configure logging according to the defined level of verbosity.
         """
         if self.verbosity >= 2:
-            basicConfig(level=DEBUG)
+            basicConfig(format=LOG_FORMAT, level=DEBUG)
         elif self.verbosity >= 1:
-            basicConfig(level=INFO)
+            basicConfig(format=LOG_FORMAT, level=INFO)
         else:
-            basicConfig(level=WARNING)
+            basicConfig(format=LOG_FORMAT, level=WARNING)
 
     def print_error(self, ex, with_info=False):
         print("{}: {}".format(ex.__class__.__name__, ex.error))

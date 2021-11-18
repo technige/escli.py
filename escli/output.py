@@ -16,15 +16,11 @@
 # limitations under the License.
 
 
-from escli.version import get_version
-from escli.commands import Command
+from tabulate import tabulate, tabulate_formats
 
 
-class VersionCommand(Command):
-    """ Show the version.
-    """
-
-    def attach(self, subparsers):
-        parser = subparsers.add_parser("version", description=VersionCommand.__doc__)
-        parser.set_defaults(f=lambda _: print("escli version %s" % get_version()))
-        return parser
+def print_data(data, fmt):
+    if fmt in tabulate_formats:
+        print(tabulate(data, headers="keys", tablefmt=fmt))
+    else:
+        raise ValueError("Unsupported output format %r" % fmt)

@@ -16,9 +16,8 @@
 # limitations under the License.
 
 
-from tabulate import tabulate
-
 from escli.commands import Command
+from escli.output import print_data
 
 
 class SearchQuery(Command):
@@ -55,7 +54,7 @@ class SearchQuery(Command):
         """
         res = self.client.search(index=args.index, _source_includes=args.include, size=args.size, sort=args.sort,
                                  query=self.make_query(args))
-        print(tabulate([hit["_source"] for hit in res["hits"]["hits"]], headers="keys", tablefmt=args.format))
+        print_data([hit["_source"] for hit in res["hits"]["hits"]], args.format)
 
     def make_query(self, args):
         """ Build and return the query body for a given set of arguments.

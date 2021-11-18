@@ -16,15 +16,9 @@
 # limitations under the License.
 
 
-from escli.version import get_version
-from escli.commands import Command
-
-
-class VersionCommand(Command):
-    """ Show the version.
-    """
-
-    def attach(self, subparsers):
-        parser = subparsers.add_parser("version", description=VersionCommand.__doc__)
-        parser.set_defaults(f=lambda _: print("escli version %s" % get_version()))
-        return parser
+def get_version():
+    from os import path
+    version_file = path.join(path.dirname(__file__), "VERSION")
+    with open(version_file) as f:
+        v = f.read()
+        return v.strip()

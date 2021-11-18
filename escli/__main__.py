@@ -16,12 +16,15 @@
 # limitations under the License.
 
 
-from escli.elastic import ElasticsearchTool
+from escli import make_client, make_parser, configure_logging, process_args
 
 
 def main():
-    tool = ElasticsearchTool()
-    status = tool.apply()
+    client = make_client()
+    parser = make_parser(client)
+    args = parser.parse_args()
+    configure_logging(args.verbose - args.quiet)
+    status = process_args(args)
     exit(status)
 
 

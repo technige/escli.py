@@ -16,12 +16,10 @@
 # limitations under the License.
 
 
-from fileinput import FileInput
-from json import loads, JSONDecodeError
 from logging import getLogger
 
 from escli.commands import Command
-
+from escli.reader import iter_json, iter_ndjson
 
 log = getLogger(__name__)
 
@@ -41,38 +39,25 @@ class IngestCommand(Command):
         parser.add_argument("files", metavar="FILE", nargs="*",
                             help="Files from which to load data. Data must be in JSON format, "
                                  "and the filename '-' can be used to read from standard input.")
-        parser.set_defaults(f=self.execute)
+        parser.add_argument("-f", "--format", default="json",
+                            help="Input data format")
+        parser.set_defaults(f=self.load)
         return parser
 
-    def execute(self, args):
-        for filename, lines in multi_read(args.files):
-            try:
-                document = loads("".join(lines))
-            except JSONDecodeError as ex:
-                log.error("Failed to parse file %r (%s)" % (filename, ex))
-            else:
-                res = self.client.index(args.index, document=document)
-                log.info("Ingested JSON data from file %r with result %s" % (filename, res))
+    def load(self, args):
+        if args.format == "json":
+            self.load_json(args.index, args.files)
+        elif args.format == "ndjson":
+            self.load_ndjson(args.index, args.files)
+        else:
+            raise ValueError("Unsupported input format %r" % args.format)
 
+    def load_json(self, index, files):
+        for document, filename in iter_json(files):
+            res = self.client.index(index, document=document)
+            log.info("Ingested JSON data from file %r with result %s" % (filename, res))
 
-def multi_read(files):
-    """ Iterate through a sequence of input files, reading and yielding
-    a (filename, lines) tuple for each.
-
-    Each item in `files` is a string holding the name of a file to
-    read. This function wraps the built-in FileInput class from the
-    fileinput module and, as such, an empty list or a '-' filename
-    will instead read from stdin.
-    """
-    last_filename = None
-    lines = []
-    with FileInput(files) as file_input:
-        for line in file_input:
-            if file_input.isfirstline():
-                if last_filename is not None:
-                    yield last_filename, "".join(lines)
-                last_filename = file_input.filename()
-                lines[:] = []
-            lines.append(line)
-    if last_filename is not None:
-        yield last_filename, "".join(lines)
+    def load_ndjson(self, index, files):
+        for document, filename, line_no in iter_ndjson(files):
+            res = self.client.index(index, document=document)
+            log.info("Ingested JSON data from file %r, line %d with result %s" % (filename, line_no, res))

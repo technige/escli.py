@@ -187,3 +187,32 @@ name      age
 Alice      33
 Bob        44
 ```
+
+While JSON is the default format required for source data, the `-f` option allows for explicit selection of any one of the available formats, listed below:
+- `json`
+- `ndjson`
+
+
+## Chaining Input and Output
+
+Newline-delimited JSON ([ndjson](http://ndjson.org/)) is supported as both an input and an output format.
+This allows data to be easily streamed out of one `escli` process and into another.
+
+The example below extracts five documents from the _kibana_sample_data_flights_ index and feeds them directly into the _flights2_ index.
+
+```bash
+$ escli search kibana_sample_data_flights -n 5 -f ndjson | escli -v ingest flights2 -f ndjson
+INFO: [elasticsearch] GET http://localhost:9200/ [status:200 request:0.002s]
+INFO: [elasticsearch] POST http://localhost:9200/flights2/_doc [status:201 request:0.150s]
+INFO: [escli.commands.ingest] Ingested JSON data from file '<stdin>', line 1 with result {...}
+INFO: [elasticsearch] POST http://localhost:9200/flights2/_doc [status:201 request:0.005s]
+INFO: [escli.commands.ingest] Ingested JSON data from file '<stdin>', line 2 with result {...}
+INFO: [elasticsearch] POST http://localhost:9200/flights2/_doc [status:201 request:0.004s]
+INFO: [escli.commands.ingest] Ingested JSON data from file '<stdin>', line 3 with result {...}
+INFO: [elasticsearch] POST http://localhost:9200/flights2/_doc [status:201 request:0.004s]
+INFO: [escli.commands.ingest] Ingested JSON data from file '<stdin>', line 4 with result {...}
+INFO: [elasticsearch] POST http://localhost:9200/flights2/_doc [status:201 request:0.005s]
+INFO: [escli.commands.ingest] Ingested JSON data from file '<stdin>', line 5 with result {...}
+```
+
+Note that `-f ndjson` is used for format selection for both the `search` and `ingest` processes.

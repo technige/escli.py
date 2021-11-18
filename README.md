@@ -82,7 +82,7 @@ Note that critical errors cannot be hidden.
 | -2           | `-qq`   | hide  | hide  | hide    | hide  | show     |
 
 
-## Search
+## Searching
 
 A search can be performed using the `escli search` command.
 Each search operation requires a target index and the column selection and output format can be tuned by command line options.
@@ -134,6 +134,25 @@ JQ2XXQ5      Helsinki Vantaa Airport                         Rain
 VT9O2KD      Ottawa Macdonald-Cartier International Airport  Rain
 7SFSTEH      Narita International Airport                    Rain
 ```
+
+
+## Output Formats
+
+Escli supports a number of different output formats for search results.
+The `escli formats` command shows the full list of formats available.
+
+```bash
+$ escli formats
+Output formats for search results:
+  fancy_grid         fancy_outline      github             grid               
+  html               jira               latex              latex_booktabs     
+  latex_longtable    latex_raw          mediawiki          moinmoin           
+  orgtbl             pipe               plain              presto             
+  pretty             psql               rst                simple             
+  textile            tsv                unsafehtml         youtrack           
+```
+
+This list includes all formats supported by [_tabulate_](https://pypi.org/project/tabulate/) which is used internally by Escli. 
 
 
 ## Ingestion

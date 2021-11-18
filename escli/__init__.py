@@ -22,6 +22,7 @@ from os import getenv
 
 from elasticsearch import Elasticsearch, ConnectionError, AuthenticationException, TransportError
 
+from escli.commands.formats import FormatsCommand
 from escli.commands.ingest import IngestCommand
 from escli.commands.search import SearchQuery
 from escli.commands.version import VersionCommand
@@ -59,6 +60,7 @@ def make_parser(client):
     parser.set_defaults(f=lambda _: parser.print_usage())
     subparsers = parser.add_subparsers()
     VersionCommand().attach(subparsers)
+    FormatsCommand().attach(subparsers)
     SearchQuery(client).attach(subparsers)
     IngestCommand(client).attach(subparsers)
     return parser

@@ -19,6 +19,9 @@
 from tabulate import tabulate, tabulate_formats
 
 
+output_formats = list(tabulate_formats)
+
+
 def print_data(data, fmt):
     if fmt in tabulate_formats:
         print(tabulate(data, headers="keys", tablefmt=fmt))

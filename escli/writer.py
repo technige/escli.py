@@ -16,14 +16,19 @@
 # limitations under the License.
 
 
+from json import dumps
+
 from tabulate import tabulate, tabulate_formats
 
 
-output_formats = list(tabulate_formats)
+output_formats = set(tabulate_formats) | {"ndjson"}
 
 
 def print_data(data, fmt):
-    if fmt in tabulate_formats:
+    if fmt == "ndjson":
+        for datum in data:
+            print(dumps(datum))
+    elif fmt in tabulate_formats:
         print(tabulate(data, headers="keys", tablefmt=fmt))
     else:
         raise ValueError("Unsupported output format %r" % fmt)

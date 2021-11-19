@@ -1,8 +1,9 @@
 # Escli
 
 Escli is a tool for interacting with an Elasticsearch service via the command line.
+It can also be used with Enterprise App Search, by use of the `--app` flag.
 
-It began as an experimental side project during November 2021, implementing a limited set of functionality.
+This project began as an experimental side project during November 2021, implementing a limited set of functionality.
 It is currently considered prototypical, and not suitable for production use.
 
 
@@ -21,12 +22,15 @@ $ pip install --user escli
 ```
 
 
-## Basic Usage
+## Version
 
-### Quick Example
+The current installed version of `escli` can be shown using the `escli version` command.
+
+
+## Quick Search Example
 
 ```bash
-$ export ES_PASSWORD=XXXXXXXXXXXXXXXXXXXX
+$ export ESCLI_PASSWORD=XXXXXXXXXXXXXXXXXXXX
 $ escli search kibana_sample_data_flights -f github -i "FlightNum,OriginAirportID,DestAirportID" -n 15
 | FlightNum   | DestAirportID   | OriginAirportID   |
 |-------------|-----------------|-------------------|
@@ -47,26 +51,32 @@ $ escli search kibana_sample_data_flights -f github -i "FlightNum,OriginAirportI
 | NRHSVG8     | SJU             | RM12              |
 ```
 
-### Connectivity & Authentication
+
+## Operating Modes
+
+By default, `escli` operates in Elasticsearch mode, which expects a regular Elasticsearch service to be available.
+
+To switch to Enterprise App Search mode instead, use `escli -a` or `escli --app`.
+
+Note that as a result of this dual backend support, some terminology has been abstracted over.
+For example, a _repository_ can refer to an _index_ if in Elasticsearch mode, or an _engine_ if in Enterprise App Search mode.
+
+
+## Connectivity & Authentication
 
 The `escli` tool relies on connection details and credentials supplied through environment variables.
 The following list of variable are accepted:
-- `ES_HOST` - one or more host names to which to connect; multiple hosts can be separated by commas and a port number can be appended after a colon (e.g. `a.example.com:8888,b.example.com:9999`)
-- `ES_USER` - user name for HTTP auth (default = `elastic`)
-- `ES_PASSWORD` - password for HTTP auth (no default)
+- `ESCLI_HOST` - one or more host names to which to connect; multiple hosts can be separated by commas and a port number can be appended after a colon (e.g. `a.example.com:8888,b.example.com:9999`)
+- `ESCLI_USER` - user name for HTTP auth (default = `elastic` or `enterprise_search` depending on mode)
+- `ESCLI_PASSWORD` - password for HTTP auth (no default)
 
 If no password is available, `escli` assumes no HTTP auth is intended, and connects without.
 
 
-### Version
-
-The version of `escli` can be shown using the `escli version` command.
-
-
-### Verbosity
+## Verbosity
 
 Verbosity can be increased using the `-v` command line option and decreased using the `-q` option.
-This can be passed multiple times (e.g. `-vv`) for a higher level of detail with each `v` or `q` increasing or decreasing the level respectively.
+These options can be passed multiple times (e.g. `-vv`) for a higher level of detail with each `v` or `q` increasing or decreasing the level respectively.
 Any `-v` and `-q` options passed must be included _before_ the command, i.e. `escli -v COMMAND ARGS...`
 
 The table below shows the available verbosity levels and the options required to select each.
@@ -92,7 +102,7 @@ If no criteria are passed, a 'match_all' search will be carried out.
 The example below searches the _kibana_sample_data_flights_ index, returning the _FlightNum_, _Origin_ and _Dest_ fields for the first 5 hits.
 
 ```bash
-$ escli search -n=5 -i=FlightNum,Origin,Dest kibana_sample_data_flights
+$ escli search -i=FlightNum,Origin,Dest -n=5 kibana_sample_data_flights
 FlightNum    Origin                                          Dest
 -----------  ----------------------------------------------  --------------------------------------------
 9HY9SWR      Frankfurt am Main Airport                       Sydney Kingsford Smith International Airport
@@ -105,7 +115,7 @@ EAYQW69      Naples International Airport                    Treviso-Sant'Angelo
 This second example applies criteria to select only those results with "London" within the _OriginCityName_.
 
 ```bash
-$ escli search -n=5 -i=FlightNum,Origin,Dest kibana_sample_data_flights OriginCityName=London
+$ escli search -i=FlightNum,Origin,Dest -n=5 kibana_sample_data_flights OriginCityName=London
 FlightNum    Origin                  Dest
 -----------  ----------------------  -------------------------------------------------------
 46J5N4Y      London Gatwick Airport  Ottawa Macdonald-Cartier International Airport
@@ -133,6 +143,42 @@ Output formats for search results:
 ```
 
 This list includes all formats supported by [_tabulate_](https://pypi.org/project/tabulate/) which is used internally by Escli. 
+
+
+## Sorting
+
+Results can be sorted using the `-s` or `--sort` option.
+To this can be passed the name of a field by which to sort.
+To sort in reverse order, prefix the field name with a tilde '~' symbol.
+
+
+## Pagination
+
+Search results are automatically paginated.
+By default, the first 10 results from page 1 are returned, but this can be tuned using the `-n` and `-p` options respectively.
+
+The `-n` option (long form `--page-size`) is used to determine the number of results returned per page.
+
+The `-p` option (long form `--page-number`) is used to select a page number to return.
+All results on earlier pages will be skipped, returning only the results for the desired page.
+
+The example below shows an App Search query against the _national-parks-demo_ data set, returning only page 3 of results.
+
+```bash
+$ escli --app search -i=id,title,date_established -s=title -p=3 national-parks-demo
+date_established           title                  id
+-------------------------  ---------------------  --------------------------
+1910-05-11T05:00:00+00:00  Glacier                park_glacier
+1980-12-02T06:00:00+00:00  Glacier Bay            park_glacier-bay
+1919-02-26T06:00:00+00:00  Grand Canyon           park_grand-canyon
+1929-02-26T06:00:00+00:00  Grand Teton            park_grand-teton
+1986-10-27T06:00:00+00:00  Great Basin            park_great-basin
+2004-09-13T05:00:00+00:00  Great Sand Dunes       park_great-sand-dunes
+1934-06-15T05:00:00+00:00  Great Smoky Mountains  park_great-smoky-mountains
+1966-10-15T05:00:00+00:00  Guadalupe Mountains    park_guadalupe-mountains
+1916-08-01T05:00:00+00:00  Haleakala              park_haleakala
+1916-08-01T05:00:00+00:00  Hawaii Volcanoes       park_hawaii-volcanoes
+```
 
 
 ## Ingestion
@@ -181,7 +227,7 @@ This allows data to be easily streamed out of one `escli` process and into anoth
 The example below extracts five documents from the _kibana_sample_data_flights_ index and feeds them directly into the _flights2_ index.
 
 ```bash
-$ escli search kibana_sample_data_flights -n 5 -f ndjson | escli -v ingest flights2 -f ndjson
+$ escli search kibana_sample_data_flights -n=5 -f=ndjson | escli -v ingest flights2 -f=ndjson
 INFO: [elasticsearch] GET http://localhost:9200/ [status:200 request:0.002s]
 INFO: [elasticsearch] POST http://localhost:9200/flights2/_doc [status:201 request:0.150s]
 INFO: [escli.commands.ingest] Ingested JSON data from file '<stdin>', line 1 with result {...}

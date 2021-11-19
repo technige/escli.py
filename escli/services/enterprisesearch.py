@@ -19,7 +19,7 @@
 from os import getenv
 from logging import getLogger
 
-from elasticsearch import Elasticsearch, ConnectionError, AuthenticationException, TransportError
+from elastic_enterprise_search import AppSearch, ConnectionError, TransportError
 
 from escli.services import Client, ClientConnectionError, ClientAuthError, ClientAPIError
 
@@ -27,40 +27,46 @@ from escli.services import Client, ClientConnectionError, ClientAuthError, Clien
 log = getLogger(__name__)
 
 
-class ElasticsearchClient(Client):
-    """ Client for use with Elasticsearch.
+class AppSearchClient(Client):
+    """ Client for use with Enterprise App Search.
     """
 
     def __init__(self):
         host = getenv("ESCLI_HOST")
-        user = getenv("ESCLI_USER", "elastic")
+        user = getenv("ESCLI_USER", "enterprise_search")
         password = getenv("ESCLI_PASSWORD")
-        with ElasticsearchExceptionWrapper():
-            self._client = Elasticsearch(hosts=host.split(",") if host else None,
-                                         http_auth=(user, password) if password else None)
+        with EnterpriseSearchExceptionWrapper():
+            self._client = AppSearch(hosts=["http://" + h for h in host.split(",")] if host else None,
+                                     http_auth=(user, password) if password else None)
 
     def search(self, repo, query, fields=None, sort=None, page_size=10, page_number=1):
-        with ElasticsearchExceptionWrapper():
-            if query is None:
-                query = {"match_all": {}}
-            else:
-                field, _, value = query.partition("=")
-                query = {"match": {field: value}}
+        body = {
+            "query": query or "",
+            "page": {
+                "size": page_size,
+                "current": page_number,
+            },
+        }
+        if fields:
+            body["result_fields"] = {field: {"raw": {}} for field in fields.split(",")}
+        if sort:
             if sort.startswith("~"):
-                sort = {sort[1:]: "desc"}
+                body["sort"] = {sort[1:]: "desc"}
             else:
-                sort = {sort: "asc"}
-            res = self._client.search(index=repo, query=query, _source_includes=fields or "*",
-                                      sort=sort, from_=(page_size * (page_number - 1)), size=page_size)
-        return [hit["_source"] for hit in res["hits"]["hits"]]
+                body["sort"] = {sort: "asc"}
+        with EnterpriseSearchExceptionWrapper():
+            response = self._client.search(engine_name=repo, body=body)
+        # TODO: don't throw away metadata
+        return [{key: value["raw"] for key, value in result.items() if not key.startswith("_")}
+                for result in response["results"]]
 
     def ingest(self, repo, document):
-        with ElasticsearchExceptionWrapper():
+        with EnterpriseSearchExceptionWrapper():
             res = self._client.index(index=repo, document=document)
         return res  # TODO: something more intelligent
 
 
-class ElasticsearchExceptionWrapper:
+class EnterpriseSearchExceptionWrapper:
     """ Wrapper to catch and promote exceptions to the appropriate level
     of abstraction.
     """
@@ -74,11 +80,6 @@ class ElasticsearchExceptionWrapper:
         try:
             raise exc_val
         except ConnectionError as ex:
-            log.debug(ex.info)
             raise ClientConnectionError("Connection error: %s" % ex) from ex
-        except AuthenticationException as ex:
-            log.debug(ex.info)
-            raise ClientAuthError("Auth error: %s" % ex) from ex
         except TransportError as ex:
-            log.debug(ex.info)
             raise ClientAPIError("API error: %s" % ex) from ex

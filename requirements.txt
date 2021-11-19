@@ -1,2 +1,3 @@
 elasticsearch
+elastic_enterprise_search
 tabulate

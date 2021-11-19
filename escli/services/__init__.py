@@ -19,7 +19,6 @@
 from abc import ABC, abstractmethod
 from logging import basicConfig, getLogger, DEBUG, INFO, WARNING, ERROR, CRITICAL
 
-
 log = getLogger(__name__)
 
 
@@ -70,8 +69,8 @@ class SPI:
         else:
             basicConfig(format=self.log_format, level=CRITICAL)
 
-    def init_client(self):
-        self.__client = Client.create()
+    def init_client(self, use_app_search=False):
+        self.__client = Client.create(use_app_search=use_app_search)
 
 
 class Client(ABC):
@@ -79,21 +78,22 @@ class Client(ABC):
     """
 
     @classmethod
-    def create(cls):
+    def create(cls, use_app_search=False):
         # TODO: avoid local import
-        from escli.services.elasticsearch import ElasticsearchClient
-        return ElasticsearchClient()
+        if use_app_search:
+            from escli.services.enterprisesearch import AppSearchClient
+            return AppSearchClient()
+        else:
+            from escli.services.elasticsearch import ElasticsearchClient
+            return ElasticsearchClient()
 
     @abstractmethod
-    def search(self, index, criteria=None, include=None, size=None, sort=None):
+    def search(self, repo, query, fields=None, sort=None, page_size=10, page_number=1):
         """ Carry out a search.
-        
-        :param index: index to search
-        :param criteria: (field, value) tuple, or `None` to match all
         """
 
     @abstractmethod
-    def ingest(self, index, document):
+    def ingest(self, repo, document):
         """ Ingest data.
         """
 

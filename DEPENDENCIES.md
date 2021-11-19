@@ -2,7 +2,11 @@
 
 ## `elasticsearch`
 
-The official Elasticsearch client, used for all communication with the Elasticsearch server.
+The official Elasticsearch client, used for all communication with the Elasticsearch service.
+
+## `elastic_enterprise_search`
+
+The official Elastic Enterprise Search client, used for all communication with the Enterprise Search service.
 
 ## `tabulate`
 

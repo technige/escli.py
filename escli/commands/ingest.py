@@ -30,8 +30,9 @@ class IngestCommand(Command):
 
     def attach(self, subparsers):
         parser = subparsers.add_parser("ingest", description=IngestCommand.__doc__)
-        parser.add_argument("index", metavar="INDEX",
-                            help="Target index into which to ingest data.")
+        parser.add_argument("repo", metavar="REPO",
+                            help="Target repository to ingest into. For Elasticsearch, this will be an index name; "
+                                 "for Enterprise Search, this will be an engine name.")
         parser.add_argument("files", metavar="FILE", nargs="*",
                             help="Files from which to load data. Data must be in JSON format, "
                                  "and the filename '-' can be used to read from standard input.")

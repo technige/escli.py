@@ -24,7 +24,7 @@ def main():
     spi = SPI()
     cli = CLI(spi)
     spi.init_logging(cli.args.verbose - cli.args.quiet)
-    spi.init_client()
+    spi.init_client(use_app_search=cli.args.app)
     status = cli.process()
     exit(status)
 

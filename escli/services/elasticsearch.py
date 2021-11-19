@@ -46,10 +46,13 @@ class ElasticsearchClient(Client):
             else:
                 field, _, value = query.partition("=")
                 query = {"match": {field: value}}
-            if sort.startswith("~"):
-                sort = {sort[1:]: "desc"}
+            if sort:
+                if sort.startswith("~"):
+                    sort = {sort[1:]: "desc"}
+                else:
+                    sort = {sort: "asc"}
             else:
-                sort = {sort: "asc"}
+                sort = None
             res = self._client.search(index=repo, query=query, _source_includes=fields or "*",
                                       sort=sort, from_=(page_size * (page_number - 1)), size=page_size)
         return [hit["_source"] for hit in res["hits"]["hits"]]

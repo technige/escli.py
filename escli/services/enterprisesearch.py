@@ -62,7 +62,7 @@ class AppSearchClient(Client):
 
     def ingest(self, repo, document):
         with EnterpriseSearchExceptionWrapper():
-            res = self._client.index(index=repo, document=document)
+            res = self._client.index_documents(engine_name=repo, documents=[document])
         return res  # TODO: something more intelligent
 
 

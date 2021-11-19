@@ -43,9 +43,9 @@ class IngestCommand(Command):
 
     def load(self, args):
         if args.format == "json":
-            self.load_json(args.index, args.files)
+            self.load_json(args.repo, args.files)
         elif args.format == "ndjson":
-            self.load_ndjson(args.index, args.files)
+            self.load_ndjson(args.repo, args.files)
         else:
             raise ValueError("Unsupported input format %r" % args.format)
 

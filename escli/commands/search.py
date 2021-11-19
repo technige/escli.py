@@ -20,7 +20,7 @@ from escli.commands import Command
 from escli.writer import print_data
 
 
-class SearchQuery(Command):
+class SearchCommand(Command):
     """ Perform a search query against an index.
 
     By default, this is a 'match_all' query, although other more
@@ -29,62 +29,29 @@ class SearchQuery(Command):
     """
 
     def attach(self, subparsers):
-        parser = subparsers.add_parser("search", description=SearchQuery.__doc__)
+        parser = subparsers.add_parser("search", description=SearchCommand.__doc__)
         parser.add_argument("index", metavar="INDEX",
                             help="Target index to search. Multiple index names can be provided "
                                  "as a comma-separated list, or use '*' to search all indices.")
+        parser.add_argument("pattern", metavar="FIELD=VALUE", nargs="?", default=None,
+                            help="Pattern to match in the form 'FIELD=VALUE'.")
         parser.add_argument("-f", "--format", default="simple",
                             help="Output table format")
         parser.add_argument("-i", "--include", default="*",
                             help="Source fields to include in matching documents")
         parser.add_argument("-n", "--size", type=int, default=10)
         parser.add_argument("-s", "--sort")
-        parser.set_defaults(f=self.execute)
-        search_subparsers = parser.add_subparsers()
-        MatchSearchQuery(self.spi).attach(search_subparsers)
-        TermSearchQuery(self.spi).attach(search_subparsers)
+        parser.set_defaults(f=self.search)
         return parser
 
-    def execute(self, args):
+    def search(self, args):
         """ Execute the search query and retrieve and display the results.
         """
-        hits = self.spi.client.search_all(args.index, include=args.include, size=args.size, sort=args.sort)
-        print_data(hits, args.format)
-
-
-class MatchSearchQuery(SearchQuery):
-    """ Perform a 'match' search query against an index.
-    """
-
-    def attach(self, subparsers):
-        parser = subparsers.add_parser("match", description=MatchSearchQuery.__doc__)
-        parser.add_argument("pattern", metavar="FIELD=QUERY",
-                            help="Pattern to match in the form 'FIELD=QUERY'.")
-        parser.set_defaults(f=self.execute)
-        return parser
-
-    def execute(self, args):
-        """ Execute the search query and retrieve and display the results.
-        """
-        field, _, query = args.pattern.partition("=")
-        hits = self.spi.client.search(args.index, field, query, include=args.include, size=args.size, sort=args.sort)
-        print_data(hits, args.format)
-
-
-class TermSearchQuery(SearchQuery):
-    """ Perform a 'term' search query against an index.
-    """
-
-    def attach(self, subparsers):
-        parser = subparsers.add_parser("term", description=TermSearchQuery.__doc__)
-        parser.add_argument("pattern", metavar="FIELD=VALUE",
-                            help="Term to match in the form 'FIELD=VALUE'.")
-        parser.set_defaults(f=self.execute)
-        return parser
-
-    def execute(self, args):
-        """ Execute the search query and retrieve and display the results.
-        """
-        field, _, value = args.pattern.partition("=")
-        hits = self.spi.client.search(args.index, field, value, include=args.include, size=args.size, sort=args.sort)
+        if args.pattern:
+            field, _, value = args.pattern.partition("=")
+            criteria = (field, value)
+        else:
+            criteria = None
+        hits = self.spi.client.search(args.index, criteria,
+                                      include=args.include, size=args.size, sort=args.sort)
         print_data(hits, args.format)

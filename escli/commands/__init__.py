@@ -56,7 +56,7 @@ class CLI:
         # TODO: avoid local imports
         from escli.commands.formats import FormatsCommand
         from escli.commands.ingest import IngestCommand
-        from escli.commands.search import SearchQuery
+        from escli.commands.search import SearchCommand
         from escli.commands.version import VersionCommand
         parser = ArgumentParser(description=__doc__)
         parser.add_argument("-v", "--verbose", action="count", default=0, help="Increase verbosity")
@@ -65,7 +65,7 @@ class CLI:
         subparsers = parser.add_subparsers()
         VersionCommand(spi).attach(subparsers)
         FormatsCommand(spi).attach(subparsers)
-        SearchQuery(spi).attach(subparsers)
+        SearchCommand(spi).attach(subparsers)
         IngestCommand(spi).attach(subparsers)
         return parser
 

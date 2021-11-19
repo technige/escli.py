@@ -43,30 +43,18 @@ class ElasticsearchClient(Client):
                 # without auth
                 self.es = Elasticsearch()
 
-    def search_all(self, index, include=None, size=None, sort=None):
-        """ Carry out a search, matching all results.
-        """
-        with ElasticsearchExceptionWrapper():
-            res = self.es.search(index=index, _source_includes=include, size=size, sort=sort,
-                                 query={"match_all": {}})
-        return [hit["_source"] for hit in res["hits"]["hits"]]
-
-    def search(self, index, field, value, include=None, size=None, sort=None):
+    def search(self, index, criteria=None, include=None, size=None, sort=None):
         """ Carry out a search, matching results where the `value` can
         be found in the `field`.
         """
         with ElasticsearchExceptionWrapper():
+            if criteria is None:
+                query = {"match_all": {}}
+            else:
+                field, value = criteria
+                query = {"match": {field: value}}
             res = self.es.search(index=index, _source_includes=include, size=size, sort=sort,
-                                 query={"match": {field: value}})
-        return [hit["_source"] for hit in res["hits"]["hits"]]
-
-    def search_exact(self, index, field, value, include=None, size=None, sort=None):
-        """ Carry out a search, matching results where the `field` is an
-        exact match for the `value`.
-        """
-        with ElasticsearchExceptionWrapper():
-            res = self.es.search(index=index, _source_includes=include, size=size, sort=sort,
-                                 query={"term": {field: value}})
+                                 query=query)
         return [hit["_source"] for hit in res["hits"]["hits"]]
 
     def ingest(self, index, document):

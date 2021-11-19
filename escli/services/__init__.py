@@ -85,20 +85,11 @@ class Client(ABC):
         return ElasticsearchClient()
 
     @abstractmethod
-    def search_all(self, index, include=None, size=None, sort=None):
-        """ Carry out a search, matching all results.
-        """
-
-    @abstractmethod
-    def search(self, index, field, query, include=None, size=None, sort=None):
-        """ Carry out a search, matching results where the `query` can
-        be found in the `field`.
-        """
-
-    @abstractmethod
-    def search_exact(self, index, field, value, include=None, size=None, sort=None):
-        """ Carry out a search, matching results where the `field` is an
-        exact match for the `value`.
+    def search(self, index, criteria=None, include=None, size=None, sort=None):
+        """ Carry out a search.
+        
+        :param index: index to search
+        :param criteria: (field, value) tuple, or `None` to match all
         """
 
     @abstractmethod

@@ -85,15 +85,14 @@ Note that critical errors cannot be hidden.
 ## Searching
 
 A search can be performed using the `escli search` command.
-Each search operation requires a target index and the column selection and output format can be tuned by command line options.
+Each search operation requires a target index and search criteria in the form `FIELD=VALUE`.
+Column selection and output format can also be tuned by command line options.
 
-### 'Match All' Search Queries
-
-The simplest (and default) form of search is a basic 'match_all'.
+If no criteria are passed, a 'match_all' search will be carried out.
 The example below searches the _kibana_sample_data_flights_ index, returning the _FlightNum_, _Origin_ and _Dest_ fields for the first 5 hits.
 
 ```bash
-$ escli search kibana_sample_data_flights -n 5 -i FlightNum,Origin,Dest
+$ escli search -n=5 -i=FlightNum,Origin,Dest kibana_sample_data_flights
 FlightNum    Origin                                          Dest
 -----------  ----------------------------------------------  --------------------------------------------
 9HY9SWR      Frankfurt am Main Airport                       Sydney Kingsford Smith International Airport
@@ -103,13 +102,10 @@ EAYQW69      Naples International Airport                    Treviso-Sant'Angelo
 58U013N      Licenciado Benito Juarez International Airport  Xi'an Xianyang International Airport
 ```
 
-### 'Match' Search Queries
-
-A more selective query can be achieved using the `match` subcommand.
-The example below selects only those results with "London" within the _OriginCityName_.
+This second example applies criteria to select only those results with "London" within the _OriginCityName_.
 
 ```bash
-$ escli search kibana_sample_data_flights -n 5 -i FlightNum,Origin,Dest match OriginCityName=London
+$ escli search -n=5 -i=FlightNum,Origin,Dest kibana_sample_data_flights OriginCityName=London
 FlightNum    Origin                  Dest
 -----------  ----------------------  -------------------------------------------------------
 46J5N4Y      London Gatwick Airport  Ottawa Macdonald-Cartier International Airport
@@ -117,22 +113,6 @@ R0JFGVC      London Luton Airport    Stockholm-Arlanda Airport
 X8NT4WO      London Gatwick Airport  New Chitose Airport
 T0939V5      London Gatwick Airport  London Gatwick Airport
 AGZPJJ3      London Luton Airport    Montreal / Pierre Elliott Trudeau International Airport
-```
-
-### 'Term' Search Queries
-
-An exact match can be obtained using the `term` subcommand.
-The example below looks for the exact value "Rain" in the _DestWeather_ field.
-
-```bash
-$ escli search kibana_sample_data_flights -n 5 -i FlightNum,Dest,DestWeather term DestWeather=Rain
-FlightNum    Dest                                            DestWeather
------------  ----------------------------------------------  -------------
-9HY9SWR      Sydney Kingsford Smith International Airport    Rain
-SNI3M1Z      Treviso-Sant'Angelo Airport                     Rain
-JQ2XXQ5      Helsinki Vantaa Airport                         Rain
-VT9O2KD      Ottawa Macdonald-Cartier International Airport  Rain
-7SFSTEH      Narita International Airport                    Rain
 ```
 
 

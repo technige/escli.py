@@ -16,15 +16,16 @@
 # limitations under the License.
 
 
-from escli import make_client, make_parser, configure_logging, process_args
+from escli.commands import CLI
+from escli.services import SPI
 
 
 def main():
-    client = make_client()
-    parser = make_parser(client)
-    args = parser.parse_args()
-    configure_logging(args.verbose - args.quiet)
-    status = process_args(args)
+    spi = SPI()
+    cli = CLI(spi)
+    spi.init_logging(cli.args.verbose - cli.args.quiet)
+    spi.init_client()
+    status = cli.process()
     exit(status)
 
 

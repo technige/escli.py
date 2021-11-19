@@ -28,10 +28,6 @@ class SearchQuery(Command):
     and 'term'.
     """
 
-    def __init__(self, client):
-        super().__init__()
-        self.client = client
-
     def attach(self, subparsers):
         parser = subparsers.add_parser("search", description=SearchQuery.__doc__)
         parser.add_argument("index", metavar="INDEX",
@@ -45,21 +41,15 @@ class SearchQuery(Command):
         parser.add_argument("-s", "--sort")
         parser.set_defaults(f=self.execute)
         search_subparsers = parser.add_subparsers()
-        MatchSearchQuery(self.client).attach(search_subparsers)
-        TermSearchQuery(self.client).attach(search_subparsers)
+        MatchSearchQuery(self.spi).attach(search_subparsers)
+        TermSearchQuery(self.spi).attach(search_subparsers)
         return parser
 
     def execute(self, args):
         """ Execute the search query and retrieve and display the results.
         """
-        res = self.client.search(index=args.index, _source_includes=args.include, size=args.size, sort=args.sort,
-                                 query=self.make_query(args))
-        print_data([hit["_source"] for hit in res["hits"]["hits"]], args.format)
-
-    def make_query(self, args):
-        """ Build and return the query body for a given set of arguments.
-        """
-        return {"match_all": {}}
+        hits = self.spi.client.search_all(args.index, include=args.include, size=args.size, sort=args.sort)
+        print_data(hits, args.format)
 
 
 class MatchSearchQuery(SearchQuery):
@@ -73,9 +63,12 @@ class MatchSearchQuery(SearchQuery):
         parser.set_defaults(f=self.execute)
         return parser
 
-    def make_query(self, args):
+    def execute(self, args):
+        """ Execute the search query and retrieve and display the results.
+        """
         field, _, query = args.pattern.partition("=")
-        return {"match": {field: query}}
+        hits = self.spi.client.search(args.index, field, query, include=args.include, size=args.size, sort=args.sort)
+        print_data(hits, args.format)
 
 
 class TermSearchQuery(SearchQuery):
@@ -89,6 +82,9 @@ class TermSearchQuery(SearchQuery):
         parser.set_defaults(f=self.execute)
         return parser
 
-    def make_query(self, args):
+    def execute(self, args):
+        """ Execute the search query and retrieve and display the results.
+        """
         field, _, value = args.pattern.partition("=")
-        return {"term": {field: value}}
+        hits = self.spi.client.search(args.index, field, value, include=args.include, size=args.size, sort=args.sort)
+        print_data(hits, args.format)

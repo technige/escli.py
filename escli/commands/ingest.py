@@ -28,10 +28,6 @@ class IngestCommand(Command):
     """ Load data into an Elasticsearch index.
     """
 
-    def __init__(self, client):
-        super().__init__()
-        self.client = client
-
     def attach(self, subparsers):
         parser = subparsers.add_parser("ingest", description=IngestCommand.__doc__)
         parser.add_argument("index", metavar="INDEX",
@@ -54,10 +50,10 @@ class IngestCommand(Command):
 
     def load_json(self, index, files):
         for document, filename in iter_json(files):
-            res = self.client.index(index, document=document)
+            res = self.spi.client.ingest(index, document)
             log.info("Ingested JSON data from file %r with result %s" % (filename, res))
 
     def load_ndjson(self, index, files):
         for document, filename, line_no in iter_ndjson(files):
-            res = self.client.index(index, document=document)
+            res = self.spi.client.ingest(index, document)
             log.info("Ingested JSON data from file %r, line %d with result %s" % (filename, line_no, res))

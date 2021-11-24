@@ -32,11 +32,11 @@ class ElasticsearchClient(Client):
     """
 
     def __init__(self):
-        host = getenv("ESCLI_HOST")
+        addr = getenv("ESCLI_ADDR")
         user = getenv("ESCLI_USER", "elastic")
         password = getenv("ESCLI_PASSWORD")
         with ElasticsearchExceptionWrapper():
-            self._client = Elasticsearch(hosts=host.split(",") if host else None,
+            self._client = Elasticsearch(hosts=addr.split(",") if addr else None,
                                          http_auth=(user, password) if password else None)
 
     def search(self, repo, query, fields=None, sort=None, page_size=10, page_number=1):

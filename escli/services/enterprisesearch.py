@@ -32,11 +32,11 @@ class AppSearchClient(Client):
     """
 
     def __init__(self):
-        host = getenv("ESCLI_HOST")
+        addr = getenv("ESCLI_ADDR")
         user = getenv("ESCLI_USER", "enterprise_search")
         password = getenv("ESCLI_PASSWORD")
         with EnterpriseSearchExceptionWrapper():
-            self._client = AppSearch(hosts=["http://" + h for h in host.split(",")] if host else None,
+            self._client = AppSearch(hosts=addr.split(",") if addr else None,
                                      http_auth=(user, password) if password else None)
 
     def search(self, repo, query, fields=None, sort=None, page_size=10, page_number=1):

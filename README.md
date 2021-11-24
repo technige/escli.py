@@ -66,7 +66,7 @@ For example, a _repository_ can refer to an _index_ if in Elasticsearch mode, or
 
 The `escli` tool relies on connection details and credentials supplied through environment variables.
 The following list of variable are accepted:
-- `ESCLI_HOST` - one or more host names to which to connect; multiple hosts can be separated by commas and a port number can be appended after a colon (e.g. `a.example.com:8888,b.example.com:9999`)
+- `ESCLI_ADDR` - host names or URLs to which to connect; these can be of the form `host`, `host:port` or `scheme://host:port` and multiple values can be separated by commas (e.g. `a.example.com:8888,b.example.com:9999`)
 - `ESCLI_USER` - user name for HTTP auth (default = `elastic` or `enterprise_search` depending on mode)
 - `ESCLI_PASSWORD` - password for HTTP auth (no default)
 

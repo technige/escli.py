@@ -33,7 +33,7 @@ class AppSearchClient(Client):
 
     def __init__(self):
         addr = getenv("ESCLI_ADDR")
-        user = getenv("ESCLI_USER", "enterprise_search")
+        user = getenv("ESCLI_USER", "elastic")
         password = getenv("ESCLI_PASSWORD")
         with EnterpriseSearchExceptionWrapper():
             self._client = AppSearch(hosts=addr.split(",") if addr else None,

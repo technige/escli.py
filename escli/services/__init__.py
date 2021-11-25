@@ -18,6 +18,7 @@
 
 from abc import ABC, abstractmethod
 from logging import basicConfig, getLogger, DEBUG, INFO, WARNING, ERROR, CRITICAL
+from os import getenv
 
 log = getLogger(__name__)
 
@@ -76,6 +77,24 @@ class SPI:
 class Client(ABC):
     """ Base client abstraction.
     """
+
+    @classmethod
+    def get_settings_from_env(cls, default_user="elastic"):
+        """ Build and return a dictionary of client keyword settings
+        based on available environment variables.
+        """
+        cloud_id = getenv("ESCLI_CLOUD_ID")
+        addr = getenv("ESCLI_ADDR")
+        user = getenv("ESCLI_USER", default_user)
+        password = getenv("ESCLI_PASSWORD")
+        settings = {}
+        if cloud_id:
+            settings["cloud_id"] = cloud_id
+        if addr:
+            settings["hosts"] = addr.split(",")
+        if password:
+            settings["http_auth"] = (user, password)
+        return settings
 
     @classmethod
     def create(cls, use_app_search=False):

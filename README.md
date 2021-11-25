@@ -30,6 +30,7 @@ The current installed version of `escli` can be shown using the `escli version` 
 ## Quick Search Example
 
 ```bash
+$ export ESCLI_CLOUD_ID=xxxx:XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 $ export ESCLI_PASSWORD=XXXXXXXXXXXXXXXXXXXX
 $ escli search kibana_sample_data_flights -f github -i "FlightNum,OriginAirportID,DestAirportID" -n 15
 | FlightNum   | DestAirportID   | OriginAirportID   |
@@ -65,12 +66,30 @@ For example, a _repository_ can refer to an _index_ if in Elasticsearch mode, or
 ## Connectivity & Authentication
 
 The `escli` tool relies on connection details and credentials supplied through environment variables.
-The following list of variable are accepted:
-- `ESCLI_ADDR` - host names or URLs to which to connect; these can be of the form `host`, `host:port` or `scheme://host:port` and multiple values can be separated by commas (e.g. `a.example.com:8888,b.example.com:9999`)
-- `ESCLI_USER` - user name for HTTP auth (default = `elastic`)
-- `ESCLI_PASSWORD` - password for HTTP auth (no default)
+For a default [Elastic Cloud](https://www.elastic.co/cloud/) deployment, only the `ESCLI_CLOUD_ID` and `ESCLI_PASSWORD` variables will generally need to be set.
+Other variables are available for use with local, on-prem, and other customised deployments.
 
-If no password is available, `escli` assumes no HTTP auth is intended, and connects without.
+The following variables are accepted:
+
+### `ESCLI_CLOUD_ID`
+The [Cloud ID](https://www.elastic.co/guide/en/cloud/current/ec-cloud-id.html) of an Elastic Cloud deployment.
+If using a local or on-prem deployment, this can remain unset.
+
+### `ESCLI_ADDR` 
+The host names or URLs to which to connect.
+This does not need to be set if `ESCLI_CLOUD_ID` is set.
+
+The string may contain one or more individual values, each separated by commas.
+Each value can be of the form `host`, `host:port` or `scheme://host:port`.
+Both `http` and `https` schemes are valid here.
+
+### `ESCLI_USER` 
+The name of the user, used for authentication over HTTP.
+If this value is not set, `elastic` is used as a default.
+
+### `ESCLI_PASSWORD`
+The password used for authentication over HTTP.
+If no password is set, `escli` assumes no HTTP auth is intended, and connects without.
 
 
 ## Verbosity

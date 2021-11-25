@@ -16,7 +16,6 @@
 # limitations under the License.
 
 
-from os import getenv
 from logging import getLogger
 
 from elasticsearch import Elasticsearch, ConnectionError, AuthenticationException, TransportError
@@ -32,12 +31,8 @@ class ElasticsearchClient(Client):
     """
 
     def __init__(self):
-        addr = getenv("ESCLI_ADDR")
-        user = getenv("ESCLI_USER", "elastic")
-        password = getenv("ESCLI_PASSWORD")
         with ElasticsearchExceptionWrapper():
-            self._client = Elasticsearch(hosts=addr.split(",") if addr else None,
-                                         http_auth=(user, password) if password else None)
+            self._client = Elasticsearch(**self.get_settings_from_env())
 
     def search(self, repo, query, fields=None, sort=None, page_size=10, page_number=1):
         with ElasticsearchExceptionWrapper():

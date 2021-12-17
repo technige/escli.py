@@ -16,12 +16,42 @@
 # limitations under the License.
 
 
+from csv import list_dialects, reader, writer
 from fileinput import FileInput
-from json import loads, JSONDecodeError
+from json import dumps, loads, JSONDecodeError
 from logging import getLogger
+from sys import stdout
+
+from tabulate import tabulate, tabulate_formats
 
 
 log = getLogger(__name__)
+
+
+csv_formats = {"csv_{}".format(dialect.replace("-", "_")): dialect
+               for dialect in list_dialects()}
+if "csv_excel" in csv_formats:
+    csv_formats["csv"] = csv_formats.pop("csv_excel")
+if "csv_excel_tab" in csv_formats:
+    csv_formats["tsv"] = csv_formats.pop("csv_excel_tab")
+
+output_formats = set(tabulate_formats) | csv_formats.keys() | {"ndjson"}
+
+
+def print_data(data, fmt):
+    if fmt == "ndjson":
+        for datum in data:
+            print(dumps(datum))
+    elif fmt in csv_formats:
+        csv_writer = writer(stdout, dialect=csv_formats[fmt])
+        for i, datum in enumerate(data):
+            if i == 0:
+                csv_writer.writerow(datum.keys())
+            csv_writer.writerow(datum.values())
+    elif fmt in tabulate_formats:
+        print(tabulate(data, headers="keys", tablefmt=fmt))
+    else:
+        raise ValueError("Unsupported output format %r" % fmt)
 
 
 def multi_read(files):
@@ -73,3 +103,12 @@ def iter_ndjson(files):
                     file_input.filename(), file_input.filelineno(), ex))
             else:
                 yield document, file_input.filename(), file_input.filelineno()
+
+
+def iter_csv(files, dialect):
+    with FileInput(files) as file_input:
+        csv_reader = reader(file_input, dialect=dialect)
+        keys = next(csv_reader)
+        for values in csv_reader:
+            document = dict(zip(keys, values))
+            yield document, file_input.filename(), file_input.filelineno()

@@ -17,7 +17,7 @@
 
 
 from escli.commands import Command
-from escli.writer import print_data
+from escli.io import print_data
 
 
 class SearchCommand(Command):

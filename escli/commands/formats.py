@@ -17,7 +17,7 @@
 
 
 from escli.commands import Command
-from escli.writer import output_formats
+from escli.io import output_formats
 
 
 class FormatsCommand(Command):

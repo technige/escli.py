@@ -153,12 +153,13 @@ The `escli formats` command shows the full list of formats available.
 ```bash
 $ escli formats
 Output formats for search results:
-  fancy_grid         fancy_outline      github             grid               
-  html               jira               latex              latex_booktabs     
-  latex_longtable    latex_raw          mediawiki          moinmoin           
-  orgtbl             pipe               plain              presto             
-  pretty             psql               rst                simple             
-  textile            tsv                unsafehtml         youtrack           
+  csv                csv_unix           fancy_grid         fancy_outline      
+  github             grid               html               jira               
+  latex              latex_booktabs     latex_longtable    latex_raw          
+  mediawiki          moinmoin           ndjson             orgtbl             
+  pipe               plain              presto             pretty             
+  psql               rst                simple             textile            
+  tsv                unsafehtml         youtrack           
 ```
 
 This list includes all formats supported by [_tabulate_](https://pypi.org/project/tabulate/) which is used internally by Escli. 
@@ -234,8 +235,14 @@ Bob        44
 ```
 
 While JSON is the default format required for source data, the `-f` option allows for explicit selection of any one of the available formats, listed below:
-- `json`
-- `ndjson`
+- `csv` - Excel-compatible CSV
+- `csv_unix` - Unix-compatible CSV
+- `json` - single document JSON
+- `ndjson` - newline-delimited JSON
+- `tsv` - Tab-separated values
+
+Note that most formats allow one document per line, whereas `json` only allows one document per file, by design.
+CSV and TSV formats require a header line to be included, containing the names of the fields.
 
 
 ## Chaining Input and Output

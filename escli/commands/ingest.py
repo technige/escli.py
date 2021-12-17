@@ -19,7 +19,7 @@
 from logging import getLogger
 
 from escli.commands import Command
-from escli.reader import iter_json, iter_ndjson
+from escli.io import iter_json, iter_ndjson, csv_formats, iter_csv
 
 log = getLogger(__name__)
 
@@ -46,15 +46,22 @@ class IngestCommand(Command):
             self.load_json(args.repo, args.files)
         elif args.format == "ndjson":
             self.load_ndjson(args.repo, args.files)
+        elif args.format in csv_formats:
+            self.load_csv(args.repo, args.files, dialect=csv_formats[args.format])
         else:
             raise ValueError("Unsupported input format %r" % args.format)
 
-    def load_json(self, index, files):
+    def load_json(self, repo, files):
         for document, filename in iter_json(files):
-            res = self.spi.client.ingest(index, document)
+            res = self.spi.client.ingest(repo, document)
             log.info("Ingested JSON data from file %r with result %s" % (filename, res))
 
-    def load_ndjson(self, index, files):
+    def load_ndjson(self, repo, files):
         for document, filename, line_no in iter_ndjson(files):
-            res = self.spi.client.ingest(index, document)
+            res = self.spi.client.ingest(repo, document)
             log.info("Ingested JSON data from file %r, line %d with result %s" % (filename, line_no, res))
+
+    def load_csv(self, repo, files, dialect):
+        for document, filename, line_no in iter_csv(files, dialect):
+            res = self.spi.client.ingest(repo, document)
+            log.info("Ingested CSV data from file %r, line %d with result %s" % (filename, line_no, res))

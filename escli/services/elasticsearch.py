@@ -34,7 +34,7 @@ class ElasticsearchClient(Client):
         with ElasticsearchExceptionWrapper():
             self._client = Elasticsearch(**self.get_settings_from_env())
 
-    def search(self, repo, query, fields=None, sort=None, page_size=10, page_number=1):
+    def search(self, target, query, fields=None, sort=None, page_size=10, page_number=1):
         with ElasticsearchExceptionWrapper():
             if query is None:
                 query = {"match_all": {}}
@@ -48,13 +48,13 @@ class ElasticsearchClient(Client):
                     sort = {sort: "asc"}
             else:
                 sort = None
-            res = self._client.search(index=repo, query=query, _source_includes=fields or "*",
+            res = self._client.search(index=target, query=query, _source_includes=fields or "*",
                                       sort=sort, from_=(page_size * (page_number - 1)), size=page_size)
         return [hit["_source"] for hit in res["hits"]["hits"]]
 
-    def ingest(self, repo, document):
+    def ingest(self, target, document):
         with ElasticsearchExceptionWrapper():
-            res = self._client.index(index=repo, document=document)
+            res = self._client.index(index=target, document=document)
         return res  # TODO: something more intelligent
 
 

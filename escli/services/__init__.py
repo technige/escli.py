@@ -107,12 +107,12 @@ class Client(ABC):
             return ElasticsearchClient()
 
     @abstractmethod
-    def search(self, repo, query, fields=None, sort=None, page_size=10, page_number=1):
+    def search(self, target, query, fields=None, sort=None, page_size=10, page_number=1):
         """ Carry out a search.
         """
 
     @abstractmethod
-    def ingest(self, repo, document):
+    def ingest(self, target, document):
         """ Ingest data.
         """
 

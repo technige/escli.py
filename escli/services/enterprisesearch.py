@@ -34,7 +34,7 @@ class AppSearchClient(Client):
         with EnterpriseSearchExceptionWrapper():
             self._client = AppSearch(**self.get_settings_from_env())
 
-    def search(self, repo, query, fields=None, sort=None, page_size=10, page_number=1):
+    def search(self, target, query, fields=None, sort=None, page_size=10, page_number=1):
         body = {
             "query": query or "",
             "page": {
@@ -50,14 +50,14 @@ class AppSearchClient(Client):
             else:
                 body["sort"] = {sort: "asc"}
         with EnterpriseSearchExceptionWrapper():
-            response = self._client.search(engine_name=repo, body=body)
+            response = self._client.search(engine_name=target, body=body)
         # TODO: don't throw away metadata
         return [{key: value["raw"] for key, value in result.items() if not key.startswith("_")}
                 for result in response["results"]]
 
-    def ingest(self, repo, document):
+    def ingest(self, target, document):
         with EnterpriseSearchExceptionWrapper():
-            res = self._client.index_documents(engine_name=repo, documents=[document])
+            res = self._client.index_documents(engine_name=target, documents=[document])
         return res  # TODO: something more intelligent
 
 

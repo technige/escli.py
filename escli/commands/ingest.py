@@ -30,8 +30,8 @@ class IngestCommand(Command):
 
     def attach(self, subparsers):
         parser = subparsers.add_parser("ingest", description=IngestCommand.__doc__)
-        parser.add_argument("repo", metavar="REPO",
-                            help="Target repository to ingest into. For Elasticsearch, this will be an index name; "
+        parser.add_argument("target", metavar="TARGET",
+                            help="Ingestion target. For Elasticsearch, this will be an index name; "
                                  "for Enterprise Search, this will be an engine name.")
         parser.add_argument("files", metavar="FILE", nargs="*",
                             help="Files from which to load data. Data must be in JSON format, "
@@ -43,25 +43,25 @@ class IngestCommand(Command):
 
     def load(self, args):
         if args.format == "json":
-            self.load_json(args.repo, args.files)
+            self.load_json(args.target, args.files)
         elif args.format == "ndjson":
-            self.load_ndjson(args.repo, args.files)
+            self.load_ndjson(args.target, args.files)
         elif args.format in csv_formats:
-            self.load_csv(args.repo, args.files, dialect=csv_formats[args.format])
+            self.load_csv(args.target, args.files, dialect=csv_formats[args.format])
         else:
             raise ValueError("Unsupported input format %r" % args.format)
 
-    def load_json(self, repo, files):
+    def load_json(self, target, files):
         for document, filename in iter_json(files):
-            res = self.spi.client.ingest(repo, document)
+            res = self.spi.client.ingest(target, document)
             log.info("Ingested JSON data from file %r with result %s" % (filename, res))
 
-    def load_ndjson(self, repo, files):
+    def load_ndjson(self, target, files):
         for document, filename, line_no in iter_ndjson(files):
-            res = self.spi.client.ingest(repo, document)
+            res = self.spi.client.ingest(target, document)
             log.info("Ingested JSON data from file %r, line %d with result %s" % (filename, line_no, res))
 
-    def load_csv(self, repo, files, dialect):
+    def load_csv(self, target, files, dialect):
         for document, filename, line_no in iter_csv(files, dialect):
-            res = self.spi.client.ingest(repo, document)
+            res = self.spi.client.ingest(target, document)
             log.info("Ingested CSV data from file %r, line %d with result %s" % (filename, line_no, res))

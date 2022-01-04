@@ -21,13 +21,13 @@ from escli.io import print_data
 
 
 class SearchCommand(Command):
-    """ Perform a search query against a repository.
+    """ Perform a search query against a given target.
     """
 
     def attach(self, subparsers):
         parser = subparsers.add_parser("search", description=SearchCommand.__doc__)
-        parser.add_argument("repo", metavar="REPO",
-                            help="Target repository to search. For Elasticsearch, this will be an index name; "
+        parser.add_argument("target", metavar="TARGET",
+                            help="Search target. For Elasticsearch, this will be an index name; "
                                  "for Enterprise Search, this will be an engine name.")
         parser.add_argument("query", metavar="QUERY", nargs="?", default=None,
                             help="Search query. For Elasticsearch, this should be in the form 'FIELD=VALUE'.")
@@ -47,6 +47,6 @@ class SearchCommand(Command):
     def search(self, args):
         """ Execute the search query and retrieve and display the results.
         """
-        hits = self.spi.client.search(args.repo, args.query, fields=args.include,
+        hits = self.spi.client.search(args.target, args.query, fields=args.include,
                                       sort=args.sort, page_size=args.page_size, page_number=args.page_number)
         print_data(hits, args.format)

@@ -20,7 +20,7 @@ from logging import getLogger
 
 from elastic_enterprise_search import AppSearch, ConnectionError, TransportError
 
-from escli.services import Client, ClientConnectionError, ClientAuthError, ClientAPIError
+from escli.services import Client, ClientConnectionError, ClientAPIError
 
 
 log = getLogger(__name__)
@@ -59,6 +59,24 @@ class AppSearchClient(Client):
         with EnterpriseSearchExceptionWrapper():
             res = self._client.index_documents(engine_name=target, documents=[document])
         return res  # TODO: something more intelligent
+
+    def get_indexes(self, include_all=False):
+        engines = {}
+        with EnterpriseSearchExceptionWrapper():
+            r = self._client.list_engines()
+            for result in r["results"]:
+                name = result.pop("name")
+                if include_all or not name.starts_with("."):
+                    engines[name] = result
+        return engines
+
+    def create_index(self, name):
+        with EnterpriseSearchExceptionWrapper():
+            self._client.create_engine(name)
+
+    def delete_index(self, name):
+        with EnterpriseSearchExceptionWrapper():
+            self._client.delete_engine(name)
 
 
 class EnterpriseSearchExceptionWrapper:

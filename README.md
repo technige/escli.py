@@ -32,24 +32,24 @@ The current installed version of `escli` can be shown using the `escli version` 
 ```bash
 $ export ESCLI_CLOUD_ID=xxxx:XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 $ export ESCLI_PASSWORD=XXXXXXXXXXXXXXXXXXXX
-$ escli search kibana_sample_data_flights -f github -i "FlightNum,OriginAirportID,DestAirportID" -n 15
-| FlightNum   | DestAirportID   | OriginAirportID   |
-|-------------|-----------------|-------------------|
-| 9HY9SWR     | SYD             | FRA               |
-| X98CCZO     | VE05            | CPT               |
-| UFK2WIZ     | VE05            | VE05              |
-| EAYQW69     | TV01            | NA01              |
-| 58U013N     | XIY             | AICM              |
-| XEJ78I2     | GE01            | CYEG              |
-| EVARI8I     | ZRH             | ZRH               |
-| 1IRBW25     | YOW             | RM12              |
-| M05KE88     | HYD             | MI11              |
-| SNI3M1Z     | TV01            | SVO               |
-| JQ2XXQ5     | HEL             | ABQ               |
-| V30ITD0     | VIE             | VE05              |
-| P0WMFH7     | PVG             | AICM              |
-| VT9O2KD     | YOW             | NA01              |
-| NRHSVG8     | SJU             | RM12              |
+$ escli search kibana_sample_data_flights -i "FlightNum,OriginAirportID,DestAirportID" -n 15
+FlightNum    DestAirportID    OriginAirportID
+-----------  ---------------  -----------------
+B5PRMI8      ZRH              ZRH
+0MWVVV8      MI12             BLR
+OE6XDRI      VIE              XHBU
+TWA3PWG      SHA              BO08
+0VH5EM7      HYD              BOM
+0LT8Q4U      WAW              PEK
+A8ZYYWS      CTS              YUL
+HG5QDEY      LHR              IST
+M21BD4I      XIY              HND
+MKXCO04      MUC              CJU
+VDDH65N      RM12             CTU
+U90A6BX      XHBU             HEL
+QY97TB0      VE05             MI11
+U35KKLL      RM12             CT03
+DMYXR3E      NRT              UIO
 ```
 
 
@@ -265,3 +265,21 @@ INFO: [escli.commands.ingest] Ingested JSON data from file '<stdin>', line 5 wit
 ```
 
 Note that `-f ndjson` is used for format selection for both the `search` and `ingest` processes.
+
+
+## Index Management
+
+Indexes can be listed, created and deleted using the `ls`, `mk`, and `rm` commands respectively.
+For App Search, this applies to engines rather than indexes.
+
+The example below shows all three operations:
+
+```bash
+$ escli ls
+kibana_sample_data_flights
+$ escli mk my_index
+$ escli ls
+kibana_sample_data_flights
+my_index
+$ escli rm my_index
+```

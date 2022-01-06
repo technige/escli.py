@@ -24,8 +24,14 @@ class FormatsCommand(Command):
     """ Display information on supported formats.
     """
 
-    def attach(self, subparsers):
-        parser = subparsers.add_parser("formats", description=FormatsCommand.__doc__)
+    def get_name(self):
+        return "formats"
+
+    def get_description(self):
+        return self.__doc__.strip()
+
+    def register(self, subparsers):
+        parser = subparsers.add_parser(self.get_name(), description=self.get_description())
         parser.set_defaults(f=lambda _: print_formats())
         return parser
 

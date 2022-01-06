@@ -59,9 +59,6 @@ By default, `escli` operates in Elasticsearch mode, which expects a regular Elas
 
 To switch to Enterprise App Search mode instead, use `escli -a` or `escli --app`.
 
-Note that as a result of this dual backend support, some terminology has been abstracted over.
-For example, a _target_ can refer to an _index_ if in Elasticsearch mode, or an _engine_ if in Enterprise App Search mode.
-
 
 ## Connectivity & Authentication
 

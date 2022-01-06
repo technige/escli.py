@@ -28,8 +28,14 @@ class IngestCommand(Command):
     """ Load data into an Elasticsearch index.
     """
 
-    def attach(self, subparsers):
-        parser = subparsers.add_parser("ingest", description=IngestCommand.__doc__)
+    def get_name(self):
+        return "ingest"
+
+    def get_description(self):
+        return self.__doc__.strip()
+
+    def register(self, subparsers):
+        parser = subparsers.add_parser(self.get_name(), description=self.get_description())
         parser.add_argument("target", metavar="TARGET",
                             help="Ingestion target. For Elasticsearch, this will be an index name; "
                                  "for Enterprise Search, this will be an engine name.")

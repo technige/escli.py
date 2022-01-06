@@ -107,6 +107,19 @@ class Client(ABC):
             return ElasticsearchClient()
 
     @abstractmethod
+    def get_indexes(self, include_all=False):
+        """ Return a dict containing an entry for every available index.
+        """
+
+    def create_index(self, name):
+        """ Create a new index.
+        """
+
+    def delete_index(self, name):
+        """ Delete an index.
+        """
+
+    @abstractmethod
     def search(self, target, query, fields=None, sort=None, page_size=10, page_number=1):
         """ Carry out a search.
         """

@@ -34,6 +34,16 @@ class ElasticsearchClient(Client):
         with ElasticsearchExceptionWrapper():
             self._client = Elasticsearch(**self.get_settings_from_env())
 
+    def get_indexes(self, include_all=False):
+        pattern = "*" if include_all else "*,-.*"
+        return self._client.indices.get(index=pattern)
+
+    def create_index(self, name):
+        self._client.indices.create(index=name)
+
+    def delete_index(self, name):
+        self._client.indices.delete(index=name)
+
     def search(self, target, query, fields=None, sort=None, page_size=10, page_number=1):
         with ElasticsearchExceptionWrapper():
             if query is None:

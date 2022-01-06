@@ -24,8 +24,14 @@ class SearchCommand(Command):
     """ Perform a search query against a given target.
     """
 
-    def attach(self, subparsers):
-        parser = subparsers.add_parser("search", description=SearchCommand.__doc__)
+    def get_name(self):
+        return "search"
+
+    def get_description(self):
+        return self.__doc__.strip()
+
+    def register(self, subparsers):
+        parser = subparsers.add_parser(self.get_name(), description=self.get_description())
         parser.add_argument("target", metavar="TARGET",
                             help="Search target. For Elasticsearch, this will be an index name; "
                                  "for Enterprise Search, this will be an engine name.")

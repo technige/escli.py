@@ -57,8 +57,19 @@ DMYXR3E      NRT              UIO
 
 By default, `escli` operates in Elasticsearch mode, which expects a regular Elasticsearch service to be available.
 
-To switch to Enterprise App Search mode instead, use `escli -a` or `escli --app`.
+To switch to App Search or Serverless mode, instead use the `escli.app` or `escli.serverless` commands respectively.
 
+```bash
+$ escli.serverless search books
+name                 author             release_date      page_count
+-------------------  -----------------  --------------  ------------
+Snow Crash           Neal Stephenson    1992-06-01               470
+Revelation Space     Alastair Reynolds  2000-03-15               585
+1984                 George Orwell      1985-06-01               328
+Fahrenheit 451       Ray Bradbury       1953-10-15               227
+Brave New World      Aldous Huxley      1932-06-01               268
+The Handmaid's Tale  Margaret Atwood    1985-06-01               311
+```
 
 ## Connectivity & Authentication
 
@@ -79,6 +90,10 @@ This does not need to be set if `ESCLI_CLOUD_ID` is set.
 The string may contain one or more individual values, each separated by commas.
 Each value can be of the form `host`, `host:port` or `scheme://host:port`.
 Both `http` and `https` schemes are valid here.
+
+### `ESCLI_API_KEY`
+The API key used for authentication over HTTP.
+This can be used as an alternative to username/password auth (below).
 
 ### `ESCLI_USER` 
 The name of the user, used for authentication over HTTP.

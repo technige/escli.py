@@ -70,8 +70,8 @@ class SPI:
         else:
             basicConfig(format=self.log_format, level=CRITICAL)
 
-    def init_client(self, use_app_search=False):
-        self.__client = Client.create(use_app_search=use_app_search)
+    def init_client(self, mode=None):
+        self.__client = Client.create(mode)
 
 
 class Client(ABC):
@@ -100,9 +100,11 @@ class Client(ABC):
         return settings
 
     @classmethod
-    def create(cls, use_app_search=False):
-        # TODO: avoid local import
-        if use_app_search:
+    def create(cls, mode=None):
+        if mode == "serverless":
+            from escli.services.serverless import ElasticsearchServerlessClient
+            return ElasticsearchServerlessClient()
+        elif mode == "app":
             from escli.services.enterprisesearch import AppSearchClient
             return AppSearchClient()
         else:

@@ -52,7 +52,8 @@ class CLI:
             return self.args.f(self.args) or 0
         except ClientAuthError as ex:
             log.error(str(ex))
-            log.warning("Check that the ESCLI_USER and ESCLI_PASSWORD environment variables are correctly set.")
+            log.warning("Check that the ESCLI_API_KEY or ESCLI_USER/ESCLI_PASSWORD "
+                        "environment variables are correctly set.")
             status = 1
         except Exception as ex:
             log.error(str(ex))
@@ -82,7 +83,6 @@ class CLI:
                                 formatter_class=RawDescriptionHelpFormatter)
         parser.add_argument("-v", "--verbose", action="count", default=0, help="Increase verbosity")
         parser.add_argument("-q", "--quiet", action="count", default=0, help="Decrease verbosity")
-        parser.add_argument("-a", "--app", action="store_true", help="Use App Search instead of Elasticsearch")
         parser.set_defaults(f=lambda _: parser.print_usage())
         subparsers = parser.add_subparsers()
         for command in commands:

@@ -111,30 +111,35 @@ class Client(ABC):
             from escli.services.elasticsearch import ElasticsearchClient
             return ElasticsearchClient()
 
-    @abstractmethod
+    def info(self):
+        """ Return backend system information.
+        """
+        raise NotImplementedError
+
     def search(self, target, query, fields=None, sort=None, page_size=10, page_number=1):
         """ Carry out a search.
         """
+        raise NotImplementedError
 
-    @abstractmethod
     def ingest(self, target, document):
         """ Ingest data.
         """
+        raise NotImplementedError
 
-    @abstractmethod
     def get_indexes(self, include_all=False):
         """ Return a dict containing an entry for every available index.
         """
+        raise NotImplementedError
 
-    @abstractmethod
     def create_index(self, name):
         """ Create a new index.
         """
+        raise NotImplementedError
 
-    @abstractmethod
     def delete_index(self, name):
         """ Delete an index.
         """
+        raise NotImplementedError
 
 
 class ClientConnectionError(Exception):

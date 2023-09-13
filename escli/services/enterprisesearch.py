@@ -34,6 +34,9 @@ class AppSearchClient(Client):
         with EnterpriseSearchExceptionWrapper():
             self._client = AppSearch(**self.get_settings_from_env())
 
+    def info(self):
+        raise NotImplementedError  # TODO
+
     def search(self, target, query, fields=None, sort=None, page_size=10, page_number=1):
         body = {
             "query": query or "",

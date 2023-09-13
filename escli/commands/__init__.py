@@ -55,6 +55,9 @@ class CLI:
             log.warning("Check that the ESCLI_API_KEY or ESCLI_USER/ESCLI_PASSWORD "
                         "environment variables are correctly set.")
             status = 1
+        except NotImplementedError:
+            log.error("Command not implemented")
+            status = 1
         except Exception as ex:
             log.error(str(ex))
             status = 1
@@ -67,6 +70,7 @@ class CLI:
         # TODO: avoid local imports
         from escli.commands.formats import FormatsCommand
         from escli.commands.indexes import IndexCreateCommand, IndexDeleteCommand, IndexListCommand
+        from escli.commands.info import InfoCommand
         from escli.commands.ingest import IngestCommand
         from escli.commands.search import SearchCommand
         from escli.commands.version import VersionCommand
@@ -78,6 +82,7 @@ class CLI:
             IndexListCommand(spi),
             SearchCommand(spi),
             IngestCommand(spi),
+            InfoCommand(spi),
         ]
         parser = ArgumentParser(description=cls.build_description(commands),
                                 formatter_class=RawDescriptionHelpFormatter)

@@ -123,6 +123,32 @@ Note that critical errors cannot be hidden.
 | -2           | `-qq`   | hide  | hide  | hide    | hide  | show     |
 
 
+## Backend Info
+
+To test the connection and display the details of the backend system to which the client is connected, simply use the `escli info` command.
+
+```bash
+$ escli info
+{
+  "name": "serverless",
+  "cluster_name": "ea61ea4cc0a443bd8d27a8c9615b1364",
+  "cluster_uuid": "yVlZHz9VSrCHdFdueXFUtw",
+  "version": {
+    "number": "8.11.0",
+    "build_flavor": "serverless",
+    "build_type": "docker",
+    "build_hash": "00000000",
+    "build_date": "2023-10-31",
+    "build_snapshot": false,
+    "lucene_version": "9.7.0",
+    "minimum_wire_compatibility_version": "8.11.0",
+    "minimum_index_compatibility_version": "8.11.0"
+  },
+  "tagline": "You Know, for Search"
+}
+```
+
+
 ## Searching
 
 A search can be performed using the `escli search` command.

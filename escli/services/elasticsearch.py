@@ -34,6 +34,10 @@ class ElasticsearchClient(Client):
         with ElasticsearchExceptionWrapper():
             self._client = Elasticsearch(**self.get_settings_from_env())
 
+    def info(self):
+        with ElasticsearchExceptionWrapper():
+            return dict(self._client.info())
+
     def get_indexes(self, include_all=False):
         pattern = "*" if include_all else "*,-.*"
         return self._client.indices.get(index=pattern)

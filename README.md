@@ -1,7 +1,7 @@
 # Escli
 
 Escli is a tool for interacting with an Elasticsearch service via the command line.
-It can also be used with Enterprise App Search, by use of the `--app` flag.
+It can also be used with Serverless or Enterprise App Search backends.
 
 This project began as an experimental side project during November 2021, implementing a limited set of functionality.
 It is currently considered prototypical, and not suitable for production use.

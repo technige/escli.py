@@ -57,10 +57,10 @@ DMYXR3E      NRT              UIO
 
 By default, `escli` operates in Elasticsearch mode, which expects a regular Elasticsearch service to be available.
 
-To switch to App Search or Serverless mode, instead use the `escli.app` or `escli.serverless` commands respectively.
+To switch to App Search or Serverless mode, instead use the `escli.a` or `escli.s` commands respectively.
 
 ```bash
-$ escli.serverless search books
+$ escli.s search books
 name                 author             release_date      page_count
 -------------------  -----------------  --------------  ------------
 Snow Crash           Neal Stephenson    1992-06-01               470

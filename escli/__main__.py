@@ -29,12 +29,12 @@ def main(mode=None):
     exit(status)
 
 
-def main_app():
-    main(mode="app")
+def main_app_search():
+    main(mode="a")
 
 
 def main_serverless():
-    main(mode="serverless")
+    main(mode="s")
 
 
 if __name__ == '__main__':

@@ -101,10 +101,10 @@ class Client(ABC):
 
     @classmethod
     def create(cls, mode=None):
-        if mode == "serverless":
+        if mode == "s":
             from escli.services.serverless import ElasticsearchServerlessClient
             return ElasticsearchServerlessClient()
-        elif mode == "app":
+        elif mode == "a":
             from escli.services.enterprisesearch import AppSearchClient
             return AppSearchClient()
         else:

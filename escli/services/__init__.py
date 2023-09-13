@@ -87,6 +87,7 @@ class Client(ABC):
         addr = getenv("ESCLI_ADDR")
         user = getenv("ESCLI_USER", default_user)
         password = getenv("ESCLI_PASSWORD")
+        api_key = getenv("ESCLI_API_KEY")
         settings = {}
         if cloud_id:
             settings["cloud_id"] = cloud_id
@@ -94,6 +95,8 @@ class Client(ABC):
             settings["hosts"] = addr.split(",")
         if password:
             settings["http_auth"] = (user, password)
+        if api_key:
+            settings["api_key"] = api_key
         return settings
 
     @classmethod

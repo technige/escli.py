@@ -1,4 +1,2 @@
 elasticsearch
-elasticsearch-serverless
-elastic_enterprise_search
 tabulate

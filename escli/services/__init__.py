@@ -70,8 +70,8 @@ class SPI:
         else:
             basicConfig(format=self.log_format, level=CRITICAL)
 
-    def init_client(self, mode=None):
-        self.__client = Client.create(mode)
+    def init_client(self):
+        self.__client = Client.create()
 
 
 class Client(ABC):
@@ -83,14 +83,11 @@ class Client(ABC):
         """ Build and return a dictionary of client keyword settings
         based on available environment variables.
         """
-        cloud_id = getenv("ESCLI_CLOUD_ID")
         addr = getenv("ESCLI_ADDR")
         user = getenv("ESCLI_USER", default_user)
         password = getenv("ESCLI_PASSWORD")
         api_key = getenv("ESCLI_API_KEY")
         settings = {}
-        if cloud_id:
-            settings["cloud_id"] = cloud_id
         if addr:
             settings["hosts"] = addr.split(",")
         if password:
@@ -100,16 +97,9 @@ class Client(ABC):
         return settings
 
     @classmethod
-    def create(cls, mode=None):
-        if mode == "s":
-            from escli.services.serverless import ElasticsearchServerlessClient
-            return ElasticsearchServerlessClient()
-        elif mode == "a":
-            from escli.services.enterprisesearch import AppSearchClient
-            return AppSearchClient()
-        else:
-            from escli.services.elasticsearch import ElasticsearchClient
-            return ElasticsearchClient()
+    def create(cls):
+        from escli.services.elasticsearch import ElasticsearchClient
+        return ElasticsearchClient()
 
     def info(self):
         """ Return backend system information.

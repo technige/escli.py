@@ -20,21 +20,13 @@ from escli.commands import CLI
 from escli.services import SPI
 
 
-def main(mode=None):
+def main():
     spi = SPI()
     cli = CLI(spi)
     spi.init_logging(cli.args.verbose - cli.args.quiet)
-    spi.init_client(mode)
+    spi.init_client()
     status = cli.process()
     exit(status)
-
-
-def main_app_search():
-    main(mode="a")
-
-
-def main_serverless():
-    main(mode="s")
 
 
 if __name__ == '__main__':

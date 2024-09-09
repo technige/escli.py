@@ -1,7 +1,6 @@
 # Escli
 
 Escli is a tool for interacting with an Elasticsearch service via the command line.
-It can also be used with Serverless or Enterprise App Search backends.
 
 This project began as an experimental side project during November 2021, implementing a limited set of functionality.
 It is currently considered prototypical, and not suitable for production use.
@@ -30,8 +29,8 @@ The current installed version of `escli` can be shown using the `escli version` 
 ## Quick Search Example
 
 ```bash
-$ export ESCLI_CLOUD_ID=xxxx:XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-$ export ESCLI_PASSWORD=XXXXXXXXXXXXXXXXXXXX
+$ export ESCLI_ADDR=https://xxxxxxx.elastic.cloud:443
+$ export ESCLI_API_KEY=xxxxxxx
 $ escli search kibana_sample_data_flights -i "FlightNum,OriginAirportID,DestAirportID" -n 15
 FlightNum    DestAirportID    OriginAirportID
 -----------  ---------------  -----------------
@@ -53,35 +52,13 @@ DMYXR3E      NRT              UIO
 ```
 
 
-## Operating Modes
-
-By default, `escli` operates in Elasticsearch mode, which expects a regular Elasticsearch service to be available.
-
-To switch to App Search or Serverless mode, instead use the `escli.a` or `escli.s` commands respectively.
-
-```bash
-$ escli.s search books
-name                 author             release_date      page_count
--------------------  -----------------  --------------  ------------
-Snow Crash           Neal Stephenson    1992-06-01               470
-Revelation Space     Alastair Reynolds  2000-03-15               585
-1984                 George Orwell      1985-06-01               328
-Fahrenheit 451       Ray Bradbury       1953-10-15               227
-Brave New World      Aldous Huxley      1932-06-01               268
-The Handmaid's Tale  Margaret Atwood    1985-06-01               311
-```
-
 ## Connectivity & Authentication
 
 The `escli` tool relies on connection details and credentials supplied through environment variables.
-For a default [Elastic Cloud](https://www.elastic.co/cloud/) deployment, only the `ESCLI_CLOUD_ID` and `ESCLI_PASSWORD` variables will generally need to be set.
-Other variables are available for use with local, on-prem, and other customised deployments.
+Typically, only the `ESCLI_ADDR` and `ESCLI_API_KEY` variables will generally need to be set, although
+other variables are available.
 
 The following variables are accepted:
-
-### `ESCLI_CLOUD_ID`
-The [Cloud ID](https://www.elastic.co/guide/en/cloud/current/ec-cloud-id.html) of an Elastic Cloud deployment.
-If using a local or on-prem deployment, this can remain unset.
 
 ### `ESCLI_ADDR` 
 The host names or URLs to which to connect.

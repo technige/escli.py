@@ -43,7 +43,7 @@ class IngestCommand(Command):
                             help="Files from which to load data. Data must be in JSON format, "
                                  "and the filename '-' can be used to read from standard input.")
         parser.add_argument("-f", "--format", default="json",
-                            help="Input data format")
+                            help="Input data format (default=json)")
         parser.set_defaults(f=self.load)
         return parser
 

@@ -72,6 +72,7 @@ class CLI:
         from escli.commands.indexes import IndexCreateCommand, IndexDeleteCommand, IndexListCommand
         from escli.commands.info import InfoCommand
         from escli.commands.ingest import IngestCommand
+        from escli.commands.jsonify import JsonifyCommand
         from escli.commands.search import SearchCommand
         from escli.commands.version import VersionCommand
         commands = [
@@ -83,6 +84,7 @@ class CLI:
             SearchCommand(spi),
             IngestCommand(spi),
             InfoCommand(spi),
+            JsonifyCommand(spi),
         ]
         parser = ArgumentParser(description=cls.build_description(commands),
                                 formatter_class=RawDescriptionHelpFormatter)
